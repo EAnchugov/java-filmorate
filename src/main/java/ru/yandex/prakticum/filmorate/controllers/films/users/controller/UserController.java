@@ -4,9 +4,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 @Slf4j
 @RestController
 public class UserController {
@@ -24,23 +23,22 @@ public class UserController {
     }
     @PutMapping("/users")
     public User updateUser(@RequestBody User user){
-        if (UserCheck.userCheck(user)){
-            if (!users.containsKey(id)){
+        if (!users.containsKey(user.getId())){
+                log.error("Юзер не найден");
                 throw new ValidationException("Юзер не найден");
             }
             else {
                 log.trace("Изменен " + user);
                 users.replace(user.getId(),user);
+                return user;
             }
-
-        }
-        return user;
     }
 
 
     @GetMapping("/users")
-    public List getAllUser(){
-        return List.of(users.values());
+    public List<User> getAllUser(){
+ //       return List.of(users.values());
+        return new ArrayList<>(users.values());
     }
 
 
