@@ -1,17 +1,8 @@
 package ru.yandex.prakticum.filmorate.controllers.films.users.controller;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
-import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
