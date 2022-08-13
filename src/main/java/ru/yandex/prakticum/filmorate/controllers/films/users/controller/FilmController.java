@@ -2,9 +2,8 @@ package ru.yandex.prakticum.filmorate.controllers.films.users.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
+import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
-import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
 
 import java.util.*;
 
@@ -26,13 +25,15 @@ public class FilmController {
     }
     @PutMapping("/films")
     private Film updateFilm(@RequestBody Film film){
-        if (!films.containsKey(film.getId())){
-            log.error("Запрос фильма с неверным ID");
-            throw new ValidationException("Нет такого ID");
-        }else {
-            films.replace(film.getId(),film);
-            return film;
+        if (FilmCheck.filmCheck(film)) {
+            if (!films.containsKey(film.getId())) {
+                log.error("Запрос фильма с неверным ID");
+                throw new NotFoundException("Нет такого ID");
+            } else {
+                films.replace(film.getId(), film);
+            }
         }
+        return film;
     }
 
     @GetMapping("/films")

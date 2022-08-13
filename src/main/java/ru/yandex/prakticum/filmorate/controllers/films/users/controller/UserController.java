@@ -1,7 +1,7 @@
 package ru.yandex.prakticum.filmorate.controllers.films.users.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
+import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
 
 import java.util.*;
@@ -23,22 +23,23 @@ public class UserController {
     }
     @PutMapping("/users")
     public User updateUser(@RequestBody User user){
-        if (!users.containsKey(user.getId())){
+        if (UserCheck.userCheck(user)) {
+            if (!users.containsKey(user.getId())) {
                 log.error("Юзер не найден");
-                throw new ValidationException("Юзер не найден");
-            }
-            else {
+                throw new NotFoundException("Юзер не найден");
+            } else {
                 log.trace("Изменен " + user);
-                users.replace(user.getId(),user);
-                return user;
+                users.replace(user.getId(), user);
+
             }
+        }
+        return user;
     }
 
 
     @GetMapping("/users")
     public List<User> getAllUser(){
- //       return List.of(users.values());
-        return new ArrayList<>(users.values());
+       return new ArrayList<>(users.values());
     }
 
 

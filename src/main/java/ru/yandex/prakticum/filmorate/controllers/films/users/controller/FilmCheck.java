@@ -5,23 +5,19 @@ package ru.yandex.prakticum.filmorate.controllers.films.users.controller;
 //        продолжительность фильма должна быть положительной.
 
 
-//private final Integer id;
-//private String name;
-//private String description;
-//private Date releaseDate;
-//private Time duration;
-
-
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
-
-import java.sql.Time;
 import java.time.LocalDate;
 
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FilmCheck {
+    private static final LocalDate CHECK_DATE = LocalDate.of(1895, 12, 28);
     public static boolean filmCheck(Film film){
+
 
         if (nameCheck(film.getName())&&
             descriptionCheck(film.getDescription())&&
@@ -35,7 +31,7 @@ public class FilmCheck {
     }
 
     private static boolean nameCheck(String name){
-        if (name.isBlank()){
+        if (name == null||name.isBlank()){
             log.error("Пустое название фильма");
             throw new ValidationException("Пустое название фильма");
         }
@@ -43,14 +39,14 @@ public class FilmCheck {
     }
 
     private static boolean descriptionCheck(String description){
-        if (description.length() > 200){
+        if (description == null || description.length() > 200){
             log.error("Слишком длинное описание");
             throw new ValidationException("Слишком длинное описание");
         }
         return true;
     }
     private static boolean releaseDateCheck(LocalDate release){
-        if (release.isBefore(LocalDate.of(1895, 12, 28))){
+        if (release == null || release.isBefore(CHECK_DATE)){
             log.error("Слишком ранняя дата");
             throw new ValidationException("Слишком ранняя дата");
             }
