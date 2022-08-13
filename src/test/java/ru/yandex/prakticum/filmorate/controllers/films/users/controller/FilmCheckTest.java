@@ -1,131 +1,80 @@
 package ru.yandex.prakticum.filmorate.controllers.films.users.controller;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
+import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
+import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
+import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmCheckTest {
-
-    HttpClient client = HttpClient.newHttpClient();
-//    @Test
-//    void rightFilmCheckTest () throws URISyntaxException, IOException, InterruptedException {
-//        HttpRequest request = HttpRequest.newBuilder()
-//                .uri(new URI("http://localhost:8080/films"))
-//                .POST(HttpRequest.BodyPublishers.ofString(
-//                        "{\n" +
-//                                "  \"name\": \"nisi eiusmod\",\n" +
-//                                "  \"description\": \"adipisicing\",\n" +
-//                                "  \"releaseDate\": \"1967-03-25\",\n" +
-//                                "  \"duration\": 100\n" +
-//                                "}"
-//                ))
-//                .header("Content-type", "application/json")
-//                .build();
-//        HttpResponse response = client.send(request, HttpResponse.BodyHandlers.ofString());
-//        assertEquals(response.statusCode(), 200);
-//    }
-
     @Test
-    void wrongFilmNameCheckTest () throws URISyntaxException, IOException, InterruptedException {
+    void wrongNameTest(){
         //    название не может быть пустым;
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI("http://localhost:8080/films"))
-                .POST(HttpRequest.BodyPublishers.ofString(
-                        "{\n" +
-                                "  \"name\": \" \",\n" +
-                                "  \"description\": \"adipisicing\",\n" +
-                                "  \"releaseDate\": \"1967-03-25\",\n" +
-                                "  \"duration\": 100\n" +
-                                "}"
-                ))
-                .header("Content-type", "application/json")
+        Film film = Film.builder()
+                .description("asdasd")
+                .duration(200)
+                .releaseDate(LocalDate.of(1967,03,25))
+                .name("")
                 .build();
-        HttpResponse response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(500,response.statusCode());
+        Exception exception = assertThrows(ValidationException.class, ()-> FilmCheck.filmCheck(film));
+        assertEquals("Пустое название фильма", exception.getMessage());
 
-
-        request = HttpRequest.newBuilder()
-                .uri(new URI("http://localhost:8080/films"))
-                .POST(HttpRequest.BodyPublishers.ofString(
-                        "{\n" +
-                                "  \"name\": \"\",\n" +
-                                "  \"description\": \"adipisicing\",\n" +
-                                "  \"releaseDate\": \"1967-03-25\",\n" +
-                                "  \"duration\": 100\n" +
-                                "}"
-                ))
-                .header("Content-type", "application/json")
-                .build();
-        response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(500,response.statusCode());
+        film.setName(" ");
+        exception = assertThrows(ValidationException.class, ()-> FilmCheck.filmCheck(film));
+        assertEquals("Пустое название фильма", exception.getMessage());
     }
-
     @Test
     //    максимальная длина описания — 200 символов;
-    void wrongDescriptionLengthTest () throws URISyntaxException, IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI("http://localhost:8080/films"))
-                .POST(HttpRequest.BodyPublishers.ofString(
-                        "{\n" +
-                                "  \"name\": \"nisi eiusmod\",\n" +
-                                "  \"description\": \"Те, кому когда-либо приходилось делать в квартире ремонт," +
-                                " наверное, обращали внимание на старые газеты, наклеенные под обоями. " +
-                                "Как правило, пока все статьи не перечитаешь, ничего другого делать не можешь. " +
-                                "Интересно же — обрывки текста, чья-то жизнь... " +
-                                "Так же и с тестами. Пока ревьюэр не прочтет всё, он не успокоится. " +
-                                "Бывали случаи, когда спринт принимался именно из-за текста тестов," +
-                                " который, разумеется, никакого отношения к работе не имел.\",\n" +
-                                "  \"releaseDate\": \"1967-03-25\",\n" +
-                                "  \"duration\": 100\n" +
-                                "}"
-                ))
-                .header("Content-type", "application/json")
+    void tooLongDescriptionTest(){
+        Film film = Film.builder()
+                .description("Те, кому когда-либо приходилось делать в квартире ремонт,"+
+                        "наверное, обращали внимание на старые газеты, наклеенные под обоями." +
+                        "Как правило, пока все статьи не перечитаешь, ничего другого делать не можешь." +
+                        "Интересно же — обрывки текста, чья-то жизнь... " +
+                        "Так же и с тестами. Пока ревьюэр не прочтет всё, он не успокоится. " +
+                        "Бывали случаи, когда спринт принимался именно из-за текста тестов," +
+                        " который, разумеется, никакого отношения к работе не имел")
+                .duration(200)
+                .releaseDate(LocalDate.of(1967,03,25))
+                .name("olala")
                 .build();
-        HttpResponse response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(500, response.statusCode());
+        Exception exception = assertThrows(ValidationException.class, ()-> FilmCheck.filmCheck(film));
+        assertEquals("Слишком длинное описание", exception.getMessage());
     }
 
-    //    дата релиза — не раньше 28 декабря 1895 года;
     @Test
-    void wrongReleaseDateCheckTest () throws URISyntaxException, IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI("http://localhost:8080/films"))
-                .POST(HttpRequest.BodyPublishers.ofString(
-                        "{\n" +
-                                "  \"name\": \"nisi eiusmod\",\n" +
-                                "  \"description\": \"adipisicing\",\n" +
-                                "  \"releaseDate\": \"1667-03-25\",\n" +
-                                "  \"duration\": 100\n" +
-                                "}"
-                ))
-                .header("Content-type", "application/json")
+    void releaseDateTest(){
+        //    дата релиза — не раньше 28 декабря 1895 года;
+        Film film = Film.builder()
+                .description("asdasd")
+                .duration(200)
+                .releaseDate(LocalDate.of(1567,03,25))
+                .name("olala")
                 .build();
-        HttpResponse response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals( 500, response.statusCode());
+        Exception exception = assertThrows(ValidationException.class, ()-> FilmCheck.filmCheck(film));
+        assertEquals("Слишком ранняя дата", exception.getMessage());
     }
 
+    @Test
     //    продолжительность фильма должна быть положительной.
-    @Test
-    void wrongDurationFilmCheckTest () throws URISyntaxException, IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI("http://localhost:8080/films"))
-                .POST(HttpRequest.BodyPublishers.ofString(
-                        "{\n" +
-                                "  \"name\": \"nisi eiusmod\",\n" +
-                                "  \"description\": \"adipisicing\",\n" +
-                                "  \"releaseDate\": \"1967-03-25\",\n" +
-                                "  \"duration\": -100\n" +
-                                "}"
-                ))
-                .header("Content-type", "application/json")
+    void negativeDurationTest(){
+        Film film = Film.builder()
+                .description("asdasd")
+                .duration(-200)
+                .releaseDate(LocalDate.of(1967,03,25))
+                .name("olala")
                 .build();
-        HttpResponse response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(500, response.statusCode());
+        Exception exception = assertThrows(ValidationException.class, ()-> FilmCheck.filmCheck(film));
+        assertEquals("Продолжительность фильма меньше 0", exception.getMessage());
     }
 }
