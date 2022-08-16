@@ -1,4 +1,4 @@
-package ru.yandex.prakticum.filmorate.controllers.films.users.controller;
+package ru.yandex.prakticum.filmorate.controllers.films.users.controller.check;
 //название не может быть пустым;
 //        максимальная длина описания — 200 символов;
 //        дата релиза — не раньше 28 декабря 1895 года;

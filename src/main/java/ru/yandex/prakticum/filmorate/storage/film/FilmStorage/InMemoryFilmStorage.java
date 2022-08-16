@@ -1,20 +1,26 @@
-package ru.yandex.prakticum.filmorate.controllers.films.users.controller;
+package ru.yandex.prakticum.filmorate.storage.film.FilmStorage;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.prakticum.filmorate.controllers.films.users.controller.check.FilmCheck;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-@RestController
 @Slf4j
-public class FilmController {
+@RestController
+@Component
+public class InMemoryFilmStorage implements FilmStorage {
     private Integer id = 0;
-    private Map<Integer,Film> films = new HashMap<>();
+    private Map<Integer, Film> films = new HashMap<>();
 
     @PostMapping("/films")
-    private Film addFilm(@RequestBody Film film){
+    public Film addFilm(@RequestBody Film film){
         if (FilmCheck.filmCheck(film)){
             id++;
             film.setId(id);
@@ -24,7 +30,7 @@ public class FilmController {
         return film;
     }
     @PutMapping("/films")
-    private Film updateFilm(@RequestBody Film film){
+    public Film updateFilm(@RequestBody Film film){
         if (FilmCheck.filmCheck(film)) {
             if (!films.containsKey(film.getId())) {
                 log.error("Запрос фильма с неверным ID");
@@ -37,8 +43,8 @@ public class FilmController {
     }
 
     @GetMapping("/films")
-    private List<Film> getAllFilm(){
-      //  return List.of(films.values());
+    public List<Film> getAllFilm(){
+        //  return List.of(films.values());
         return new ArrayList<>(films.values());
     }
 }

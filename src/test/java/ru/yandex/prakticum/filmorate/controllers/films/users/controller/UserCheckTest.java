@@ -1,6 +1,7 @@
 package ru.yandex.prakticum.filmorate.controllers.films.users.controller;
 
 import org.junit.jupiter.api.Test;
+import ru.yandex.prakticum.filmorate.controllers.films.users.controller.check.UserCheck;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
 import static org.junit.jupiter.api.Assertions.*;

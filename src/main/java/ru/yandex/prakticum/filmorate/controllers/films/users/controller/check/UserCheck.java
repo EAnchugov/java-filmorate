@@ -1,4 +1,4 @@
-package ru.yandex.prakticum.filmorate.controllers.films.users.controller;
+package ru.yandex.prakticum.filmorate.controllers.films.users.controller.check;
 //электронная почта не может быть пустой и должна содержать символ @;
 //логин не может быть пустым и содержать пробелы;
 //        имя для отображения может быть пустым — в таком случае будет использован логин;

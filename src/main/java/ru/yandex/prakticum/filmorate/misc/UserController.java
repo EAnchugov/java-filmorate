@@ -1,4 +1,4 @@
-package ru.yandex.prakticum.filmorate.controllers.films.users.controller;
+/*package ru.yandex.prakticum.filmorate.controllers.films.users.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.NotFoundException;
@@ -44,3 +44,4 @@ public class UserController {
 
 
 }
+*/
