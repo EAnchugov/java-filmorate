@@ -2,7 +2,7 @@ package ru.yandex.prakticum.filmorate.storage.User.UserStorage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.check.UserCheck;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.NotFoundException;
@@ -61,7 +61,7 @@ public class InMemoryUserStorage implements UserStorage {
     public User getUser(@PathVariable("id") Integer id) {
         return users.get(id);
     }
-
+    
 
 //    @PutMapping("/users/{id}/friends/{friendId}")
 //    public void addToFriends(){

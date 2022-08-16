@@ -9,7 +9,6 @@ package ru.yandex.prakticum.filmorate.controllers.films.users.sevice;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
 import ru.yandex.prakticum.filmorate.storage.User.UserStorage.UserStorage;
 import java.util.ArrayList;
@@ -45,15 +44,16 @@ public class UserService {
             @PathVariable ("id") Integer userId,
             @PathVariable ("friendId") Integer friendId
     ){
-        inMemoryUserStorage.updateUser(
-                inMemoryUserStorage.getUser(id)
-        )
-        inMemoryUserStorage.getUser(userId).getFriends().remove(friendId.toString());
-        inMemoryUserStorage.getUser(friendId).getFriends().remove(userId.toString());
+        User user = inMemoryUserStorage.getUser(userId);
+        user.getFriends().remove(friendId);
+        inMemoryUserStorage.updateUser(user);
+        User friendUser = inMemoryUserStorage.getUser(friendId);
+        friendUser.getFriends().remove(userId);
+        inMemoryUserStorage.updateUser(friendUser);
     }
 
     @GetMapping ("/users/{id}/friends")
-    private Collection<String> getUserFriends(
+    private Collection<Integer> getUserFriends(
             @PathVariable ("id") Integer id
     ){
         return inMemoryUserStorage.getUser(id).getFriends();
@@ -65,12 +65,12 @@ public class UserService {
             @PathVariable ("otherId") Integer otherID
     ){
         ArrayList<User> commonFriends = new ArrayList<>();
-        ArrayList<String> idFriends = new ArrayList<>(inMemoryUserStorage.getUser(id).getFriends());
-        ArrayList<String> otherIdFriends = new ArrayList<>(inMemoryUserStorage.getUser(otherID).getFriends());
-        for (String friend: idFriends
+        ArrayList<Integer> idFriends = new ArrayList<>(inMemoryUserStorage.getUser(id).getFriends());
+        ArrayList<Integer> otherIdFriends = new ArrayList<>(inMemoryUserStorage.getUser(otherID).getFriends());
+        for (Integer friend: idFriends
              ) {
             if (otherIdFriends.contains(friend)){
-                commonFriends.add(inMemoryUserStorage.getUser(Integer.parseInt(friend)));
+                commonFriends.add(inMemoryUserStorage.getUser(friend));
             }
         }
         return new ArrayList<>(commonFriends);
