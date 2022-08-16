@@ -44,7 +44,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @GetMapping("/films")
     public List<Film> getAllFilm(){
-        //  return List.of(films.values());
         return new ArrayList<>(films.values());
     }
 }

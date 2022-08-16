@@ -21,7 +21,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@Service
+@Component
 @RequiredArgsConstructor
 public class InMemoryUserStorage implements UserStorage {
     private Map<Integer, User> users = new HashMap<>();
@@ -57,8 +57,8 @@ public class InMemoryUserStorage implements UserStorage {
         return new ArrayList<>(users.values());
     }
 
-    @Override
-    public User getUser(Integer id) {
+  @GetMapping("/users/{id}")
+    public User getUser(@PathVariable("id") Integer id) {
         return users.get(id);
     }
 

@@ -29,22 +29,27 @@ public class UserService {
 
 
     @PutMapping("/users/{id}/friends/{friendId}")
-    private String addFriend(
+    private void addFriend(
                            @PathVariable ("friendId") Integer friendId,
                            @PathVariable ("id") Integer userId){
-        inMemoryUserStorage.getUser(userId).getFriends().add(friendId.toString());
-        inMemoryUserStorage.getUser(friendId).getFriends().add(userId.toString());
-        return "addFriend";
+        User user = inMemoryUserStorage.getUser(userId);
+        user.getFriends().add(userId);
+        inMemoryUserStorage.updateUser(user);
+        user = inMemoryUserStorage.getUser(friendId);
+        user.getFriends().add(userId);
+        inMemoryUserStorage.updateUser(user);
     }
 
     @DeleteMapping("/users/{id}/friends/{friendId}")
-    private String deleteFriend(
+    private void deleteFriend(
             @PathVariable ("id") Integer userId,
             @PathVariable ("friendId") Integer friendId
     ){
+        inMemoryUserStorage.updateUser(
+                inMemoryUserStorage.getUser(id)
+        )
         inMemoryUserStorage.getUser(userId).getFriends().remove(friendId.toString());
         inMemoryUserStorage.getUser(friendId).getFriends().remove(userId.toString());
-        return "deelete";
     }
 
     @GetMapping ("/users/{id}/friends")
@@ -69,13 +74,5 @@ public class UserService {
             }
         }
         return new ArrayList<>(commonFriends);
-    }
-
-    @GetMapping("/users/{id}/")
-    private User getById(
-            @PathVariable("id") Integer id
-    ){
-        throw new ValidationException(inMemoryUserStorage.getUser(id).toString());
-  //      return inMemoryUserStorage.getUser(id);
     }
 }
