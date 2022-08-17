@@ -60,7 +60,7 @@ public class InMemoryFilmService implements FilmService {
                            @PathVariable("userId") Integer userId) {
         if (filmId == null || userId == null||
         filmStorage.getFilm(filmId) == null|| userStorage.getUser(userId) == null){
-            throw new NotFoundException("Film or User not found i n removeLiks");
+            throw new NotFoundException("Film or User not found in removeLikes");
         }
         Film film = filmStorage.getFilm(filmId);
        film.removeLike(userId);
