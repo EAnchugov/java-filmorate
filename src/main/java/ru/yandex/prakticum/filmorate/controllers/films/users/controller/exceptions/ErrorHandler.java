@@ -5,9 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import ru.yandex.prakticum.filmorate.controllers.films.users.model.ErrorResponse;
-
-import java.util.Map;
 
 @Component
 @RequiredArgsConstructor

@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.check.FilmCheck;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
-import ru.yandex.prakticum.filmorate.controllers.films.users.model.ErrorResponse;
+import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ErrorResponse;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
-
 import java.util.*;
 
 @Slf4j
@@ -36,7 +35,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (FilmCheck.filmCheck(film)) {
             if (!films.containsKey(film.getId())) {
                 log.error("Запрос фильма с неверным ID");
-                throw new NotFoundException("Нет такого ID");
+                throw new NotFoundException("Film ID = " + film.getId() + "have not been found");
             } else {
                 films.replace(film.getId(), film);
             }

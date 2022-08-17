@@ -1,4 +1,4 @@
-package ru.yandex.prakticum.filmorate.controllers.films.users.sevice;
+package ru.yandex.prakticum.filmorate.controllers.films.users.sevice.films;
 //        Создайте FilmService, который будет отвечать за операции с фильмами, —
 //        добавление и удаление лайка,
 //        вывод 10 наиболее популярных фильмов по количеству лайков.

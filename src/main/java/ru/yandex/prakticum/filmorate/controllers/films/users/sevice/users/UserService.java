@@ -1,4 +1,4 @@
-package ru.yandex.prakticum.filmorate.controllers.films.users.sevice;
+package ru.yandex.prakticum.filmorate.controllers.films.users.sevice.users;
 //Создайте UserService, который будет отвечать за такие операции с пользователями, как
 //        добавление в друзья,
 //        удаление из друзей,
@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
-import ru.yandex.prakticum.filmorate.controllers.films.users.model.ErrorResponse;
+import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ErrorResponse;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
 import ru.yandex.prakticum.filmorate.storage.User.UserStorage.UserStorage;
 import java.util.ArrayList;
@@ -89,17 +89,11 @@ public class UserService {
         userStorage.getUser(userId) != null && userStorage.getUser(friendId) != null){
             User user = userStorage.getUser(userId);
             User friend = userStorage.getUser(friendId);
-            if (user.containFriend(friend.getId())&& friend.containFriend(userId)){
                 for (Integer candidate : user.getFriendsStorage()){
                     if (friend.containFriend(candidate)){
                         friends.add(userStorage.getUser(candidate));
                     }
                 }
-            }
-            else {
-                //throw new NotFoundException("Users are not friends");
-                return new ArrayList<>();
-            }
         }
         else {
             throw new NotFoundException("User not found");

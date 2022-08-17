@@ -1,4 +1,4 @@
-package ru.yandex.prakticum.filmorate.controllers.films.users.model;
+package ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions;
 
 public class ErrorResponse {
         private final String error;

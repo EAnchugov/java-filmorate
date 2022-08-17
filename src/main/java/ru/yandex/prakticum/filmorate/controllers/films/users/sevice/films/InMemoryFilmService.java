@@ -1,23 +1,20 @@
-package ru.yandex.prakticum.filmorate.controllers.films.users.sevice;
+package ru.yandex.prakticum.filmorate.controllers.films.users.sevice.films;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.asm.Handle;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
-import ru.yandex.prakticum.filmorate.controllers.films.users.model.ErrorResponse;
+import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ErrorResponse;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
+import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.films.FilmService;
 import ru.yandex.prakticum.filmorate.misc.LikesComparator;
-import ru.yandex.prakticum.filmorate.storage.User.UserStorage.InMemoryUserStorage;
 import ru.yandex.prakticum.filmorate.storage.User.UserStorage.UserStorage;
 import ru.yandex.prakticum.filmorate.storage.film.FilmStorage.FilmStorage;
-import ru.yandex.prakticum.filmorate.storage.film.FilmStorage.InMemoryFilmStorage;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -62,9 +59,12 @@ public class InMemoryFilmService implements FilmService {
         filmStorage.getFilm(filmId) == null|| userStorage.getUser(userId) == null){
             throw new NotFoundException("Film or User not found in removeLikes");
         }
-        Film film = filmStorage.getFilm(filmId);
-       film.removeLike(userId);
-       filmStorage.updateFilm(film);
+        else {
+            Film film = filmStorage.getFilm(filmId);
+            film.removeLike(userId);
+            filmStorage.updateFilm(film);
+        }
+
     }
 
     @GetMapping("/films/popular")
@@ -73,9 +73,12 @@ public class InMemoryFilmService implements FilmService {
             @RequestParam(required = false) Integer count
     ) {
         count = 10;
-        return filmStorage.getAllFilm().stream()
+        ArrayList<Film> films = new ArrayList<>(filmStorage.getAllFilm());
+
+        return films.stream()
                 .limit(count)
                 .sorted(new LikesComparator().reversed())
+//                .filter(film -> film.getNumberOfLikes() > 0)
                 .collect(Collectors.toList());
 
     }

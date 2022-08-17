@@ -9,7 +9,7 @@ public class LikesComparator implements Comparator<Film> {
     public int compare(Film o1, Film o2) {
         if (o1.getNumberOfLikes() > o2.getNumberOfLikes()){
             return 1;
-        } else if (o1.getNumberOfLikes()<o2.getNumberOfLikes()) {
+        } else if (o1.getNumberOfLikes() < o2.getNumberOfLikes()) {
             return  -1;
         }else {
             return 0;
