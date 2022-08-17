@@ -1,13 +1,16 @@
 package ru.yandex.prakticum.filmorate.controllers.films.users.sevice;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.asm.Handle;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 import ru.yandex.prakticum.filmorate.storage.film.FilmStorage.FilmStorage;
-import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ErrorResponse;
 
 import java.util.List;
+import java.util.Map;
 
 
 @Component
@@ -15,7 +18,6 @@ import java.util.List;
 @RestController
 public class InMemoryFilmService implements FilmService {
     private final FilmStorage filmStorage;
-    private final ErrorResponse errorResponse;
 
 
     //PUT /films/{id}/like/{userId}
@@ -50,4 +52,5 @@ public class InMemoryFilmService implements FilmService {
         filmStorage.getAllFilm();
         return null;
     }
+
 }

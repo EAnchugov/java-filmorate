@@ -14,6 +14,10 @@ public class User {
     private String name;
     private LocalDate birthday;
     private ArrayList<Integer> friends;
-
-
+    public void addFriend(Integer id){
+        friends.add(id);
+    }
+    public void removeFriend(Integer id){
+        friends.remove(id);
+    }
 }

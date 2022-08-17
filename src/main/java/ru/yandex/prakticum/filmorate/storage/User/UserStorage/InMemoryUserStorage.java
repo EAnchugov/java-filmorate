@@ -1,11 +1,14 @@
 package ru.yandex.prakticum.filmorate.storage.User.UserStorage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.check.UserCheck;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.NotFoundException;
+import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
 
 import javax.servlet.http.PushBuilder;
@@ -21,7 +24,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@Component
+@Service
 @RequiredArgsConstructor
 public class InMemoryUserStorage implements UserStorage {
     private Map<Integer, User> users = new HashMap<>();
@@ -61,6 +64,8 @@ public class InMemoryUserStorage implements UserStorage {
     public User getUser(@PathVariable("id") Integer id) {
         return users.get(id);
     }
+
+
     
 
 //    @PutMapping("/users/{id}/friends/{friendId}")

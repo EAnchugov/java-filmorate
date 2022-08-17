@@ -14,4 +14,10 @@ public class Film {
     private LocalDate releaseDate;
     private int duration;
     private ArrayList<Integer> likedByUser;
+    public void addLike(Integer id){
+        likedByUser.add(id);
+    }
+    public void removeLike(Integer id){
+        likedByUser.remove(id);
+    }
 }
