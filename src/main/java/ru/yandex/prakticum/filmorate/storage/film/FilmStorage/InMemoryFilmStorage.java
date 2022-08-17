@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.check.FilmCheck;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
+import ru.yandex.prakticum.filmorate.controllers.films.users.model.ErrorResponse;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 
 import java.util.*;
@@ -53,5 +54,19 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.get(id);
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    private ErrorResponse validationHandle(final ValidationException e){
+        return new ErrorResponse(
+                e.getMessage()
+        );
+    }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    private ErrorResponse handle(final NotFoundException e){
+        return new ErrorResponse(
+                e.getMessage()
+        );
+    }
 }

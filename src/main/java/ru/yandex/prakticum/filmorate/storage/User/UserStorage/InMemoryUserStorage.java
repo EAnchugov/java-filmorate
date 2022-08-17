@@ -3,15 +3,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.check.UserCheck;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
+import ru.yandex.prakticum.filmorate.controllers.films.users.model.ErrorResponse;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
-
-import javax.servlet.http.PushBuilder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +22,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@Service
+@Component
 @RequiredArgsConstructor
 public class InMemoryUserStorage implements UserStorage {
     private Map<Integer, User> users = new HashMap<>();
@@ -49,7 +47,6 @@ public class InMemoryUserStorage implements UserStorage {
             } else {
                 log.trace("Изменен " + user);
                 users.replace(user.getId(), user);
-
             }
         }
         return user;
@@ -62,16 +59,25 @@ public class InMemoryUserStorage implements UserStorage {
 
   @GetMapping("/users/{id}")
     public User getUser(@PathVariable("id") Integer id) {
+        if (!users.containsKey(id)){
+            throw new NotFoundException("User not found");
+        }
         return users.get(id);
     }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    private ErrorResponse validationHandle(final ValidationException e){
+        return new ErrorResponse(
+                e.getMessage()
+        );
+    }
 
-
-    
-
-//    @PutMapping("/users/{id}/friends/{friendId}")
-//    public void addToFriends(){
-//        @PathVariable Integer id = id;
-//
-//    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    private ErrorResponse handle(final NotFoundException e){
+        return new ErrorResponse(
+                e.getMessage()
+        );
+    }
 
 }

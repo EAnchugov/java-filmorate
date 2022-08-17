@@ -7,8 +7,11 @@ package ru.yandex.prakticum.filmorate.controllers.films.users.sevice;
 //        То есть если Лена стала другом Саши, то это значит, что Саша теперь друг Лены.
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.NotFoundException;
+import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
+import ru.yandex.prakticum.filmorate.controllers.films.users.model.ErrorResponse;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
 import ru.yandex.prakticum.filmorate.storage.User.UserStorage.UserStorage;
 import java.util.ArrayList;
@@ -32,13 +35,12 @@ public class UserService {
     private void addFriend(
                            @PathVariable ("id") Integer userId,
                            @PathVariable ("friendId") Integer friendId){
-
-        User user = userStorage.getUser(userId);
-        user.addFriend(friendId);
-        userStorage.updateUser(user);
-        User friend = userStorage.getUser(friendId);
-        friend.addFriend(userId);
-        userStorage.updateUser(friend);
+            User user = userStorage.getUser(userId);
+            User friend = userStorage.getUser(friendId);
+            user.setFriend(friendId);
+            friend.setFriend(userId);
+            userStorage.updateUser(user);
+            userStorage.updateUser(friend);
     }
 
     @DeleteMapping("/users/{id}/friends/{friendId}")
@@ -46,45 +48,77 @@ public class UserService {
             @PathVariable ("id") Integer userId,
             @PathVariable ("friendId") Integer friendId
     ){
-        User user = userStorage.getUser(userId);
-        user.removeFriend(friendId);
-        userStorage.updateUser(user);
-        User friend = userStorage.getUser(friendId);
-        friend.removeFriend(userId);
-        userStorage.updateUser(friend);
+        try {
+            if (userId == null || friendId == null||
+                    userStorage.getUser(userId) == null || userStorage.getUser(friendId)==null){
+                throw new NotFoundException("User not found");
+            }
+            User user = userStorage.getUser(userId);
+            User friend = userStorage.getUser(friendId);
+            user.removeFriend(friendId);
+            friend.removeFriend(userId);
+            userStorage.updateUser(user);
+            userStorage.updateUser(friend);
+        } catch (NullPointerException e){
+            throw new NotFoundException("NPE in delete");
+        }
 
     }
 
     @GetMapping ("/users/{id}/friends")
-//    private Collection<Integer> getUserFriends(
-//            @PathVariable ("id") Integer id
-//    ){
-//        return inMemoryUserStorage.getUser(id).getFriends();
-//    }
     private List<User> getUserFriends(@PathVariable ("id") Integer id){
         List<User> friends = new ArrayList<>();
-        ArrayList<Integer> userFriends = userStorage.getUser(id).getFriends();
-        System.out.println(friends);
-        for (Integer friendsId: userFriends) {
-            friends.add(userStorage.getUser(friendsId));
+        try {
+            for (Integer friend: userStorage.getUser(id).getFriendsStorage()){
+                friends.add(userStorage.getUser(friend));
+            }
+        } catch (NullPointerException e){
+            throw new NotFoundException("exception in getUser");
         }
-        return new ArrayList<>(friends);
+        return friends;
     }
 
     @GetMapping ("/users/{id}/friends/common/{otherId}")
     private List<User> getCommonFriends(
-            @PathVariable ("id") Integer id,
-            @PathVariable ("otherId") Integer otherID
-    ){
-        ArrayList<User> commonFriends = new ArrayList<>();
-        ArrayList<Integer> idFriends = new ArrayList<>(userStorage.getUser(id).getFriends());
-        ArrayList<Integer> otherIdFriends = new ArrayList<>(userStorage.getUser(otherID).getFriends());
-        for (Integer friend: idFriends
-             ) {
-            if (otherIdFriends.contains(friend)){
-                commonFriends.add(userStorage.getUser(friend));
+            @PathVariable ("id") Integer userId,
+            @PathVariable ("otherId") Integer friendId
+    )
+    {
+        ArrayList<User> friends = new ArrayList<>();
+        if (userId != null && friendId != null &&
+        userStorage.getUser(userId) != null && userStorage.getUser(friendId) != null){
+            User user = userStorage.getUser(userId);
+            User friend = userStorage.getUser(friendId);
+            if (user.containFriend(friend.getId())&& friend.containFriend(userId)){
+                for (Integer candidate : user.getFriendsStorage()){
+                    if (friend.containFriend(candidate)){
+                        friends.add(userStorage.getUser(candidate));
+                    }
+                }
+            }
+            else {
+                //throw new NotFoundException("Users are not friends");
+                return new ArrayList<>();
             }
         }
-        return new ArrayList<>(commonFriends);
+        else {
+            throw new NotFoundException("User not found");
+        }
+        return new ArrayList<>(friends);
+    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    private ErrorResponse validationHandle(final ValidationException e){
+        return new ErrorResponse(
+                e.getMessage()
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    private ErrorResponse handle(final NotFoundException e){
+        return new ErrorResponse(
+                e.getMessage()
+        );
     }
 }
