@@ -51,10 +51,8 @@ public class InMemoryFilmService implements FilmService {
             @PathVariable("userId") Integer userId
     ) {
         Film film = filmStorage.getFilm(filmId);
-        if (!film.getLikedByUser().contains(userId)){
-            film.getLikedByUser().add(userId);
-            filmStorage.updateFilm(film);
-        }
+        film.addLike(userId);
+        filmStorage.updateFilm(film);
     }
 
     @DeleteMapping("/films/{id}/like/{userId}")
@@ -62,13 +60,11 @@ public class InMemoryFilmService implements FilmService {
                            @PathVariable("userId") Integer userId) {
         if (filmId == null || userId == null||
         filmStorage.getFilm(filmId) == null|| userStorage.getUser(userId) == null){
-            throw new NotFoundException("Remove like Film or User not found");
+            throw new NotFoundException("Film or User not found i n removeLiks");
         }
         Film film = filmStorage.getFilm(filmId);
-        if (!film.getLikedByUser().contains(userId)){
-            film.getLikedByUser().remove(userId);
-            filmStorage.updateFilm(film);
-        }
+       film.removeLike(userId);
+       filmStorage.updateFilm(film);
     }
 
     @GetMapping("/films/popular")
