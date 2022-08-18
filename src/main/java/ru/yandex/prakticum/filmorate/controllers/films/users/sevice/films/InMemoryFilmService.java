@@ -8,12 +8,11 @@ import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptio
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ErrorResponse;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
-import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.films.FilmService;
-import ru.yandex.prakticum.filmorate.misc.LikesComparator;
 import ru.yandex.prakticum.filmorate.storage.User.UserStorage.UserStorage;
 import ru.yandex.prakticum.filmorate.storage.film.FilmStorage.FilmStorage;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,15 +69,12 @@ public class InMemoryFilmService implements FilmService {
     @GetMapping("/films/popular")
     @ResponseBody
     public List<Film> getFilmTop(
-            @RequestParam(required = false) Integer count
+            @RequestParam(required = false, defaultValue = "10") Integer count
     ) {
-        count = 10;
         ArrayList<Film> films = new ArrayList<>(filmStorage.getAllFilm());
-
         return films.stream()
+                .sorted(Comparator.comparingInt(Film::getNumberOfLikes).reversed())
                 .limit(count)
-                .sorted(new LikesComparator().reversed())
-//                .filter(film -> film.getNumberOfLikes() > 0)
                 .collect(Collectors.toList());
 
     }
