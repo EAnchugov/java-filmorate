@@ -1,4 +1,5 @@
-package ru.yandex.prakticum.filmorate.storage.User.UserStorage;
+//Тут просто тренируюсь
+/*package ru.yandex.prakticum.filmorate.storage.User.UserStorage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -67,4 +68,4 @@ class InMemoryUserStorageTest {
                             .andExpect(content().string(containsString("error")));
 
         }
-}
+}*/
