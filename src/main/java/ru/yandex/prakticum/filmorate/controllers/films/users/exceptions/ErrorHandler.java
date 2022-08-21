@@ -1,4 +1,4 @@
-package ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions;
+package ru.yandex.prakticum.filmorate.controllers.films.users.exceptions;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

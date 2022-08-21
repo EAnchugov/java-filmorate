@@ -1,8 +1,8 @@
 package ru.yandex.prakticum.filmorate.controllers.films.users.controller;
 
 import org.junit.jupiter.api.Test;
-import ru.yandex.prakticum.filmorate.controllers.films.users.controller.check.FilmCheck;
-import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
+import ru.yandex.prakticum.filmorate.controllers.films.users.check.FilmCheck;
+import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.ValidationException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 import java.time.LocalDate;
 

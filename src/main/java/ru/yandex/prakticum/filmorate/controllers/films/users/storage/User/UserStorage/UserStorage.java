@@ -1,4 +1,4 @@
-package ru.yandex.prakticum.filmorate.storage.User.UserStorage;
+package ru.yandex.prakticum.filmorate.controllers.films.users.storage.User.UserStorage;
 import org.springframework.stereotype.Component;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
 

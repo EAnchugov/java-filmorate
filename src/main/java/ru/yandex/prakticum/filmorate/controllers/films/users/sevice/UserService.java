@@ -1,4 +1,4 @@
-package ru.yandex.prakticum.filmorate.controllers.films.users.sevice.users;
+package ru.yandex.prakticum.filmorate.controllers.films.users.sevice;
 //Создайте UserService, который будет отвечать за такие операции с пользователями, как
 //        добавление в друзья,
 //        удаление из друзей,
@@ -8,16 +8,18 @@ package ru.yandex.prakticum.filmorate.controllers.films.users.sevice.users;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.NotFoundException;
-import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
-import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ErrorResponse;
+import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
+import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.ValidationException;
+import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.ErrorResponse;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
-import ru.yandex.prakticum.filmorate.storage.User.UserStorage.UserStorage;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.User.UserStorage.UserStorage;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@Service
 public class UserService {
     private final UserStorage userStorage;
     @Autowired
@@ -25,16 +27,7 @@ public class UserService {
         this.userStorage = inMemoryUserStorage;
     }
 
-//    PUT /users/{id}/friends/{friendId} — добавление в друзья.
-//    DELETE /users/{id}/friends/{friendId} — удаление из друзей.
-//            GET /users/{id}/friends — возвращаем список пользователей, являющихся его друзьями.
-//            GET /users/{id}/friends/common/{otherId}
-
-
-    @PutMapping("/users/{id}/friends/{friendId}")
-    private void addFriend(
-                           @PathVariable ("id") Integer userId,
-                           @PathVariable ("friendId") Integer friendId){
+    public void addFriend(Integer userId,Integer friendId){
             User user = userStorage.getUser(userId);
             User friend = userStorage.getUser(friendId);
             user.setFriend(friendId);
@@ -43,11 +36,7 @@ public class UserService {
             userStorage.updateUser(friend);
     }
 
-    @DeleteMapping("/users/{id}/friends/{friendId}")
-    private void deleteFriend(
-            @PathVariable ("id") Integer userId,
-            @PathVariable ("friendId") Integer friendId
-    ){
+    public void deleteFriend(Integer userId,Integer friendId){
         try {
             if (userId == null || friendId == null||
                     userStorage.getUser(userId) == null || userStorage.getUser(friendId)==null){
@@ -65,8 +54,7 @@ public class UserService {
 
     }
 
-    @GetMapping ("/users/{id}/friends")
-    private List<User> getUserFriends(@PathVariable ("id") Integer id){
+    public List<User> getUserFriends(Integer id){
         List<User> friends = new ArrayList<>();
         try {
             for (Integer friend: userStorage.getUser(id).getFriendsStorage()){
@@ -78,12 +66,7 @@ public class UserService {
         return friends;
     }
 
-    @GetMapping ("/users/{id}/friends/common/{otherId}")
-    private List<User> getCommonFriends(
-            @PathVariable ("id") Integer userId,
-            @PathVariable ("otherId") Integer friendId
-    )
-    {
+    public List<User> getCommonFriends(Integer userId, Integer friendId){
         ArrayList<User> friends = new ArrayList<>();
         if (userId != null && friendId != null &&
         userStorage.getUser(userId) != null && userStorage.getUser(friendId) != null){

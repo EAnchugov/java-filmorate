@@ -1,4 +1,4 @@
-package ru.yandex.prakticum.filmorate.controllers.films.users.controller.check;
+package ru.yandex.prakticum.filmorate.controllers.films.users.check;
 //название не может быть пустым;
 //        максимальная длина описания — 200 символов;
 //        дата релиза — не раньше 28 декабря 1895 года;
@@ -8,7 +8,7 @@ package ru.yandex.prakticum.filmorate.controllers.films.users.controller.check;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
+import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.ValidationException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 import java.time.LocalDate;
 

@@ -1,4 +1,4 @@
-package ru.yandex.prakticum.filmorate.controllers.films.users.controller.check;
+package ru.yandex.prakticum.filmorate.controllers.films.users.check;
 //электронная почта не может быть пустой и должна содержать символ @;
 //логин не может быть пустым и содержать пробелы;
 //        имя для отображения может быть пустым — в таком случае будет использован логин;
@@ -7,7 +7,7 @@ package ru.yandex.prakticum.filmorate.controllers.films.users.controller.check;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
+import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.ValidationException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
 import java.time.LocalDate;
 

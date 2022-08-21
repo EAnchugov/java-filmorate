@@ -1,14 +1,14 @@
-package ru.yandex.prakticum.filmorate.storage.film.FilmStorage;
+package ru.yandex.prakticum.filmorate.controllers.films.users.storage.film.FilmStorage;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.prakticum.filmorate.controllers.films.users.controller.check.FilmCheck;
-import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.NotFoundException;
-import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ValidationException;
-import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.ErrorResponse;
+import ru.yandex.prakticum.filmorate.controllers.films.users.check.FilmCheck;
+import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
+import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.ValidationException;
+import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.ErrorResponse;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 import java.util.*;
 
