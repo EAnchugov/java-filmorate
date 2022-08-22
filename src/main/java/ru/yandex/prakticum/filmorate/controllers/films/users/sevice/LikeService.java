@@ -1,11 +1,8 @@
 package ru.yandex.prakticum.filmorate.controllers.films.users.sevice;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
-import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.ErrorResponse;
 import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
-import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.ValidationException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 import ru.yandex.prakticum.filmorate.controllers.films.users.storage.User.UserStorage.UserStorage;
 import ru.yandex.prakticum.filmorate.controllers.films.users.storage.film.FilmStorage.FilmStorage;
@@ -20,12 +17,6 @@ import java.util.stream.Collectors;
     public class LikeService {
         private final FilmStorage filmStorage;
         private final UserStorage userStorage;
-
-//    @Autowired
-//    public InMemoryFilmService(FilmStorage InMemoryFilmStorage, UserStorage InMemoryUserStorage){
-//        this.filmStorage = InMemoryFilmStorage;
-//        this.userStorage = InMemoryUserStorage;
-//    }
 
         public Film getFilmByyId(Integer id
         ){
@@ -62,20 +53,5 @@ import java.util.stream.Collectors;
                     .limit(count)
                     .collect(Collectors.toList());
 
-        }
-        @ExceptionHandler
-        @ResponseStatus(HttpStatus.BAD_REQUEST)
-        private ErrorResponse validationHandle(final ValidationException e){
-            return new ErrorResponse(
-                    e.getMessage()
-            );
-        }
-
-        @ExceptionHandler
-        @ResponseStatus(HttpStatus.NOT_FOUND)
-        private ErrorResponse handle(final NotFoundException e){
-            return new ErrorResponse(
-                    e.getMessage()
-            );
         }
     }

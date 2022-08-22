@@ -7,7 +7,7 @@ import java.util.List;
 @Component
 public interface UserStorage {
     User createUser(User user);
-    User updateUser( User user);
+    User  updateUser( User user);
     List<User> getAllUser();
     User getUser(Integer id);
 

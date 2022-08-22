@@ -1,14 +1,13 @@
 package ru.yandex.prakticum.filmorate.controllers.films.users.storage.User.UserStorage;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.prakticum.filmorate.controllers.films.users.check.UserCheck;
 import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
-import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.ValidationException;
-import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.ErrorResponse;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,8 +26,7 @@ public class InMemoryUserStorage implements UserStorage {
     private Map<Integer, User> users = new HashMap<>();
     private Integer id = 0;
 
-    @PostMapping("/users")
-    public User createUser(@RequestBody User user){
+    public User createUser(User user){
         if (UserCheck.userCheck(user)){
             id++;
             user.setId(id);
@@ -37,46 +35,63 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
-    @PutMapping("/users")
     public User updateUser(@RequestBody User user){
         if (UserCheck.userCheck(user)) {
             if (!users.containsKey(user.getId())) {
-                log.error("Юзер не найден");
                 throw new NotFoundException("Юзер не найден");
             } else {
-                log.trace("Изменен " + user);
                 users.replace(user.getId(), user);
             }
         }
         return user;
     }
 
-    @GetMapping("/users")
     public List<User> getAllUser(){
         return new ArrayList<>(users.values());
     }
 
-  @GetMapping("/users/{id}")
-    public User getUser(@PathVariable("id") Integer id) {
+    public User getUser(Integer id) {
         if (!users.containsKey(id)){
             throw new NotFoundException("User not found");
         }
         return users.get(id);
     }
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    private ErrorResponse validationHandle(final ValidationException e){
-        return new ErrorResponse(
-                e.getMessage()
-        );
-    }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    private ErrorResponse handle(final NotFoundException e){
-        return new ErrorResponse(
-                e.getMessage()
-        );
-    }
+//    @PostMapping("/users")
+//    public User createUser(@RequestBody User user){
+//        if (UserCheck.userCheck(user)){
+//            id++;
+//            user.setId(id);
+//            users.put(user.getId(),user);
+//        }
+//        return user;
+//    }
+//
+//    @PutMapping("/users")
+//    public User updateUser(@RequestBody User user){
+//        if (UserCheck.userCheck(user)) {
+//            if (!users.containsKey(user.getId())) {
+//                log.error("Юзер не найден");
+//                throw new NotFoundException("Юзер не найден");
+//            } else {
+//                log.trace("Изменен " + user);
+//                users.replace(user.getId(), user);
+//            }
+//        }
+//        return user;
+//    }
+//
+//    @GetMapping("/users")
+//    public List<User> getAllUser(){
+//        return new ArrayList<>(users.values());
+//    }
+//
+//  @GetMapping("/users/{id}")
+//    public User getUser(@PathVariable("id") Integer id) {
+//        if (!users.containsKey(id)){
+//            throw new NotFoundException("User not found");
+//        }
+//        return users.get(id);
+//    }
 
 }

@@ -29,7 +29,7 @@ public class UserCheck {
         return true;
     }
     private static boolean emailCheck(String email){
-        if (email == null||!email.contains("@") || email.isBlank())
+        if (email == null||!email.contains("@") || email.isBlank() || email.contains(" "))
         {
             log.error("Email не верифицирован");
             throw new ValidationException("Email не верифицирован");

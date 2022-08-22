@@ -7,23 +7,21 @@ package ru.yandex.prakticum.filmorate.controllers.films.users.sevice;
 //        То есть если Лена стала другом Саши, то это значит, что Саша теперь друг Лены.
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
-import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.ValidationException;
-import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.ErrorResponse;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
 import ru.yandex.prakticum.filmorate.controllers.films.users.storage.User.UserStorage.UserStorage;
+
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @Service
-public class UserService {
+public class FriendService {
     private final UserStorage userStorage;
     @Autowired
-    public UserService(UserStorage inMemoryUserStorage){
+    public FriendService(UserStorage inMemoryUserStorage){
         this.userStorage = inMemoryUserStorage;
     }
 
@@ -51,7 +49,6 @@ public class UserService {
         } catch (NullPointerException e){
             throw new NotFoundException("NPE in delete");
         }
-
     }
 
     public List<User> getUserFriends(Integer id){
@@ -82,20 +79,5 @@ public class UserService {
             throw new NotFoundException("User not found");
         }
         return new ArrayList<>(friends);
-    }
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    private ErrorResponse validationHandle(final ValidationException e){
-        return new ErrorResponse(
-                e.getMessage()
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    private ErrorResponse handle(final NotFoundException e){
-        return new ErrorResponse(
-                e.getMessage()
-        );
     }
 }
