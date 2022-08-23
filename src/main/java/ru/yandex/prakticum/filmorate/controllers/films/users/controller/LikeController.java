@@ -17,12 +17,6 @@ import java.util.List;
             this.likeService = likeService;
         }
 
-        @GetMapping("/films/{id}")
-        public Film getFilmByyId(
-                @PathVariable("id") Integer id){
-            return likeService.getFilmByyId(id);
-        }
-
         @PutMapping("/films/{id}/like/{userId}")
         public void addLike(
                 @PathVariable("id") Integer filmId,
@@ -43,7 +37,6 @@ import java.util.List;
                 @RequestParam(required = false, defaultValue = "10") Integer count
         ) {
             return likeService.getFilmTop(count);
-
         }
     }
 

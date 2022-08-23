@@ -13,13 +13,19 @@ public class ErrorHandler {
     private ErrorResponse validationHandle(final ValidationException e){
         log.error("Ошибка " + e.getMessage());
         return new ErrorResponse(
-                e.getMessage()
-        );
+                e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     private ErrorResponse handle(final NotFoundException e){
+        log.error("Ошибка " + e.getMessage());
+        return new ErrorResponse(
+                e.getMessage());
+    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    private ErrorResponse handle(final Throwable e){
         log.error("Ошибка " + e.getMessage());
         return new ErrorResponse(
                 e.getMessage()

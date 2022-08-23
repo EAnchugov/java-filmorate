@@ -1,4 +1,4 @@
-package ru.yandex.prakticum.filmorate.controllers.films.users.storage.film.FilmStorage;
+package ru.yandex.prakticum.filmorate.controllers.films.users.storage;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 import java.util.List;
 
