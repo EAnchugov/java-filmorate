@@ -2,9 +2,13 @@ package ru.yandex.prakticum.filmorate.controllers.films.users.exceptions;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import javax.validation.ConstraintViolationException;
+
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
@@ -30,5 +34,9 @@ public class ErrorHandler {
         return new ErrorResponse(
                 e.getMessage()
         );
+    }
+    @ExceptionHandler
+    public ResponseEntity< String > exc(ConstraintViolationException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

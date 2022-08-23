@@ -22,9 +22,7 @@ public class FilmService {
 
     public Film updateFilm(Film film){
         FilmCheck.filmCheck(film);
-        if (filmStorage.getFilm(film.getId()) == null) {
-            throw new NotFoundException("Film ID = " + film.getId() + "have not been found");
-            }
+        getFilm(film.getId());//проверка
         log.trace("Добавлен фильм" + film);
         return filmStorage.updateFilm(film);
     }
