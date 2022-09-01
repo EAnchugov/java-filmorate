@@ -1,46 +1,39 @@
 package ru.yandex.prakticum.filmorate.controllers.films.users.controller;
-import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
+import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.UserService;
 
-import java.util.*;
-
-@Slf4j
+import java.util.List;
+@Controller
 @RestController
 public class UserController {
-    private Map<Integer,User> users = new HashMap<>();
-    private Integer id = 0;
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping("/users")
     public User createUser(@RequestBody User user){
-        if (UserCheck.userCheck(user)){
-            id++;
-            user.setId(id);
-            users.put(user.getId(),user);
-        }
-        return user;
+        return userService.createUser(user);
     }
+
     @PutMapping("/users")
     public User updateUser(@RequestBody User user){
-        if (UserCheck.userCheck(user)) {
-            if (!users.containsKey(user.getId())) {
-                log.error("Юзер не найден");
-                throw new NotFoundException("Юзер не найден");
-            } else {
-                log.trace("Изменен " + user);
-                users.replace(user.getId(), user);
+        return userService.updateUser(user);
 
-            }
-        }
-        return user;
     }
-
 
     @GetMapping("/users")
     public List<User> getAllUser(){
-       return new ArrayList<>(users.values());
+        return userService.getAllUser();
     }
 
+    @GetMapping("/users/{id}")
+    public User getUser(@PathVariable("id") Integer id) {
+        return userService.getUser(id);
 
+    }
 }

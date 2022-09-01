@@ -1,44 +1,39 @@
 package ru.yandex.prakticum.filmorate.controllers.films.users.controller;
 
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.prakticum.filmorate.controllers.films.users.controller.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
+import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.FilmService;
 
-import java.util.*;
+import java.util.List;
 
+@Controller
 @RestController
-@Slf4j
 public class FilmController {
-    private Integer id = 0;
-    private Map<Integer,Film> films = new HashMap<>();
+
+    private final FilmService filmService;
+
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @PostMapping("/films")
-    private Film addFilm(@RequestBody Film film){
-        if (FilmCheck.filmCheck(film)){
-            id++;
-            film.setId(id);
-            log.trace("Добавлен фильм" + film);
-            films.put(film.getId(), film);
-        }
-        return film;
+    public Film addFilm(@RequestBody Film film){
+        return filmService.addFilm(film);
     }
     @PutMapping("/films")
-    private Film updateFilm(@RequestBody Film film){
-        if (FilmCheck.filmCheck(film)) {
-            if (!films.containsKey(film.getId())) {
-                log.error("Запрос фильма с неверным ID");
-                throw new NotFoundException("Нет такого ID");
-            } else {
-                films.replace(film.getId(), film);
-            }
-        }
-        return film;
+    public Film updateFilm(@RequestBody Film film){
+        return filmService.updateFilm(film);
     }
 
     @GetMapping("/films")
-    private List<Film> getAllFilm(){
-      //  return List.of(films.values());
-        return new ArrayList<>(films.values());
+    public List<Film> getAllFilm(){
+        return filmService.getAllFilm();
+    }
+
+    @GetMapping("/films/{id}")
+    public Film getFilmByyId(
+            @PathVariable("id") Integer id){
+        return filmService.getFilm(id);
     }
 }
