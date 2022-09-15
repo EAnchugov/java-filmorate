@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.prakticum.filmorate.controllers.films.users.check.UserCheck;
 import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.UserH2dbStorage;
 import ru.yandex.prakticum.filmorate.controllers.films.users.storage.UserStorage;
 
 import java.util.List;
@@ -13,19 +14,20 @@ import java.util.List;
 @Service
 public class UserService {
     private final UserStorage userStorage;
+    private final UserH2dbStorage userH2dbStorage;
 
     public User createUser(User user){
         UserCheck.userCheck(user);
-        return userStorage.createUser(user);
+        return userH2dbStorage.createUser(user);
     }
 
     public User updateUser(User user){
         if (UserCheck.userCheck(user)) {
-            if ( userStorage.getUser(user.getId()) == null) {
+            if ( userH2dbStorage.getUser(user.getId()) == null) {
                 throw new NotFoundException("Юзер не найден");
             }
         }
-        return userStorage.updateUser(user);
+        return userH2dbStorage.updateUser(user);
     }
 
     public List<User> getAllUser(){
@@ -33,7 +35,7 @@ public class UserService {
     }
 
     public User getUser(Integer id) {
-        User user = userStorage.getUser(id);
+        User user = userH2dbStorage.getUser(id);
         if (user == null){
             throw new NotFoundException("User not found");
         }

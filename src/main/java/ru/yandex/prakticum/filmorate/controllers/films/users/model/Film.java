@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.relational.core.sql.In;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -19,6 +20,8 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     private int duration;
+    private Set<Genre> genres = new HashSet<>();
+    private Mpa mpa;
 
     private Set<Integer> likedByUser = new HashSet<>();
     public void addLike(Integer id){
