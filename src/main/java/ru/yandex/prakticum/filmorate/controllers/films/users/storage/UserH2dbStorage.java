@@ -63,9 +63,7 @@ public class UserH2dbStorage implements UserStorage{
 
     @Override
     public User getUser(Integer id) {
- //       String sqlQuery = "select USER_ID, NAME, EMAIL,BIRTHDAY, LOGIN, USER_ID " +
-                String sqlQuery = "select * " +
-                "from USERS where USER_ID = ?";
+                String sqlQuery = "select * from USERS where USER_ID = ?";
         return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
 
     }

@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Genre;
+import ru.yandex.prakticum.filmorate.controllers.films.users.model.Mpa;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -47,18 +48,34 @@ public class FilmH2dbStorage implements FilmStorage{
 
     @Override
     public Film updateFilm(Film film) {
-        return null;
+        final String sqlQuery = "update FILMS set " +
+                "NAME = ?,DESCRIPTION = ?,RELEASE_DATE = ?,DURATION = ?, MPA_ID = ? where FILM_ID = ?";
+
+        jdbcTemplate.update(sqlQuery,
+                film.getName(),
+                film.getDescription(),
+                film.getReleaseDate(),
+                film.getDuration(),
+                film.getMpa().getId(),
+                film.getId());
+
+        return film;
+
     }
 
     @Override
     public List<Film> getAllFilm() {
-        return null;
+        final String sqlQuery = "select * from FILMS";
+        return jdbcTemplate.query(sqlQuery, (resultSet, rowNum) -> mapRowToFilm(resultSet,rowNum));
+
     }
 
     @Override
     public Film getFilm(Integer id) {
-        return null;
+        String sqlQuery = "SELECT * FROM FILMS  AS F LEFT JOIN MPA_RATING MR on MR.MPA_ID = F.MPA_ID WHERE FILM_ID + ?";
+        return jdbcTemplate.queryForObject(sqlQuery,this::mapRowToFilm,id);
     }
+
 
     private void setGenreByFilm(Film film) {
         final String sqlGenre = "INSERT INTO FILM_GENRES (film_id, genre_id) VALUES (?, ?)";
@@ -69,6 +86,19 @@ public class FilmH2dbStorage implements FilmStorage{
         for (Genre genre : genres) {
             jdbcTemplate.update(sqlGenre, film.getId(), genre.getId());
         }
+    }
+    private Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
+        return Film.builder()
+                .id(resultSet.getInt("FILM_ID"))
+                .name(resultSet.getString("NAME"))
+                .description(resultSet.getString("DESCRIPTION"))
+                .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
+                .duration(resultSet.getInt("DURATION"))
+                .mpa(Mpa.builder()
+                        .id(resultSet.getInt("mpa_id"))
+                        .name(resultSet.getString("mpa_name"))
+                        .build())
+                .build();
     }
 
 
