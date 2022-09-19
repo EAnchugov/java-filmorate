@@ -60,7 +60,6 @@ public class FilmH2dbStorage implements FilmStorage{
                 film.getId());
 
         return film;
-
     }
 
     @Override

@@ -27,8 +27,9 @@ public class ErrorHandler {
         return new ErrorResponse(
                 e.getMessage());
     }
+    //INTERNAL_SERVER_ERROR
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     private ErrorResponse handle(final Throwable e){
         log.error("Ошибка " + e.getMessage());
         return new ErrorResponse(

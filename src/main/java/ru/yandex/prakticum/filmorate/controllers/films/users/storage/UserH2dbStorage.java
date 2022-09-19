@@ -42,16 +42,15 @@ public class UserH2dbStorage implements UserStorage{
 
     @Override
     public User updateUser(User user) {
-        String sqlQuery = "update USERS set " +
-                "EMAIL = ?,LOGIN = ?,NAME = ?,BIRTHDAY = ? where USER_ID = ?";
+            String sqlQuery = "update USERS set " +
+                    "EMAIL = ?,LOGIN = ?,NAME = ?,BIRTHDAY = ? where USER_ID = ?";
 
-        jdbcTemplate.update(sqlQuery,
-                user.getEmail(),
-                user.getLogin(),
-                user.getName(),
-                user.getBirthday(),
-                user.getId());
-
+            jdbcTemplate.update(sqlQuery,
+                    user.getEmail(),
+                    user.getLogin(),
+                    user.getName(),
+                    user.getBirthday(),
+                    user.getId());
         return user;
     }
 
