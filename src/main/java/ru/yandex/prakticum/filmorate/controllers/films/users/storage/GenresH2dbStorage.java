@@ -13,30 +13,19 @@ import java.util.List;
 @Slf4j
 @Component
 public class GenresH2dbStorage implements GenresStorage {
-
     private final JdbcTemplate jdbcTemplate;
     @Autowired
     public GenresH2dbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
     @Override
-//    public List<Genre> getAllGenres() {
-//        final String sqlQuery = "select * from GENRES";
-//        return jdbcTemplate.query(sqlQuery, (resultSet, rowNum) -> mapRowToGenre(resultSet,rowNum));
-//    }
     public List getAllGenres(){
-
         String sql = "SELECT * FROM GENRES";
-
         return jdbcTemplate.query(
                 sql, (rs, rowNum) -> new Genre(
                         rs.getInt(1),
                         rs.getString(2)));
     }
-
-
-
     @Override
     public Genre getGenre(Integer id) {
         String sql = "SELECT * from GENRES where GENRE_ID = ? order by GENRE_ID DESC ";
