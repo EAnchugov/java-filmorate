@@ -1,8 +1,8 @@
-package ru.yandex.prakticum.filmorate.controllers.films.users.storage;
+package ru.yandex.prakticum.filmorate.controllers.films.users.storage.film;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.film.FilmStorage;
 
 import java.util.ArrayList;
 import java.util.HashMap;

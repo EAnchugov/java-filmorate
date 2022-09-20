@@ -36,6 +36,16 @@ public class ErrorHandler {
                 e.getMessage()
         );
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    private ErrorResponse handle(final IllegalArgumentException e){
+        log.error("Ошибка " + e.getMessage());
+        return new ErrorResponse(
+                e.getMessage()
+        );
+    }
+
     @ExceptionHandler
     public ResponseEntity< String > exc(ConstraintViolationException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);

@@ -1,4 +1,4 @@
-package ru.yandex.prakticum.filmorate.controllers.films.users.storage;
+package ru.yandex.prakticum.filmorate.controllers.films.users.storage.friend;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Component
-public class FriendH2dbStorage implements friendStorage{
+public class FriendH2dbStorage implements friendStorage {
     private final JdbcTemplate jdbcTemplate;
     @Autowired
     public FriendH2dbStorage(JdbcTemplate jdbcTemplate) {

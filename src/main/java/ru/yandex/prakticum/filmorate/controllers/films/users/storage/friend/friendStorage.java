@@ -1,4 +1,4 @@
-package ru.yandex.prakticum.filmorate.controllers.films.users.storage;
+package ru.yandex.prakticum.filmorate.controllers.films.users.storage.friend;
 
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
 

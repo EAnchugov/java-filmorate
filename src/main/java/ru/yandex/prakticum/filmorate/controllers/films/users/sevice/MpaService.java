@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Mpa;
-import ru.yandex.prakticum.filmorate.controllers.films.users.storage.MpaH2dbStorage;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.mpa.MpaH2dbStorage;
 
 import java.util.List;
 

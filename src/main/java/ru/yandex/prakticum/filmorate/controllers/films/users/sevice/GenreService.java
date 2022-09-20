@@ -1,11 +1,10 @@
 package ru.yandex.prakticum.filmorate.controllers.films.users.sevice;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Genre;
-import ru.yandex.prakticum.filmorate.controllers.films.users.storage.GenresH2dbStorage;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.genres.GenresH2dbStorage;
 import java.util.List;
 
 @RequiredArgsConstructor

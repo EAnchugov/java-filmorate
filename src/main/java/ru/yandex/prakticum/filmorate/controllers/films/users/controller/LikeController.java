@@ -5,7 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
-import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.LikeService;
+import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.LikeH2dbService;
 
 import javax.validation.constraints.Positive;
 import java.util.List;
@@ -13,10 +13,12 @@ import java.util.List;
 @RestController
 @Controller
 public class LikeController {
-    private final LikeService likeService;
+
+    private final LikeH2dbService likeH2dbService;
     @Autowired
-    public LikeController(LikeService likeService) {
-            this.likeService = likeService;
+    public LikeController(LikeH2dbService likeH2dbService) {
+            this.likeH2dbService = likeH2dbService;
+
         }
 
     @PutMapping("/films/{id}/like/{userId}")
@@ -24,13 +26,13 @@ public class LikeController {
         @PathVariable("id") Integer filmId,
         @PathVariable("userId") Integer userId
     ) {
-        likeService.addLike(filmId,userId);
+        likeH2dbService.addLike(filmId,userId);
     }
 
     @DeleteMapping("/films/{id}/like/{userId}")
     public void removeLike(@PathVariable("id") Integer filmId,
                            @PathVariable("userId") Integer userId) {
-        likeService.removeLike(filmId,userId);
+        likeH2dbService.removeLike(filmId,userId);
     }
 
     @GetMapping("/films/popular")
@@ -39,7 +41,7 @@ public class LikeController {
     public List<Film> getFilmTop(
             @RequestParam (required = false, defaultValue = "10")
             @Positive(message = "should be positive number")Integer count) {
-            return likeService.getFilmTop(count);
+            return likeH2dbService.getFilmTop(count);
     }
 }
 

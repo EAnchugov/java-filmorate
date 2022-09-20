@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.prakticum.filmorate.controllers.films.users.check.UserCheck;
 import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
-import ru.yandex.prakticum.filmorate.controllers.films.users.storage.UserH2dbStorage;
-import ru.yandex.prakticum.filmorate.controllers.films.users.storage.UserStorage;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.user.UserH2dbStorage;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.user.UserStorage;
 
 import java.util.List;
 

@@ -2,12 +2,10 @@ package ru.yandex.prakticum.filmorate.controllers.films.users.sevice;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
-import ru.yandex.prakticum.filmorate.controllers.films.users.storage.FriendH2dbStorage;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.friend.FriendH2dbStorage;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Service

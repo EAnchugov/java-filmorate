@@ -6,8 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.relational.core.sql.In;
 
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -19,18 +21,7 @@ public class Film {
     private String name;
     private String description;
     private LocalDate releaseDate;
-    private int duration;
-    private Set<Genre> genres = new HashSet<>();
+    private Integer duration;
     private Mpa mpa;
-
-    private Set<Integer> likedByUser = new HashSet<>();
-    public void addLike(Integer id){
-        likedByUser.add(id);
-    }
-    public void removeLike(Integer id){
-        likedByUser.remove(id);
-    }
-    public Integer getNumberOfLikes(){
-        return likedByUser.size();
-    }
+    private List<Genre> genres;
 }
