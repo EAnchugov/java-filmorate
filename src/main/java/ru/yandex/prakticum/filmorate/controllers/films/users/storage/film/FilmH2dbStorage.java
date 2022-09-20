@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
+import ru.yandex.prakticum.filmorate.controllers.films.users.model.Genre;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Mpa;
 import ru.yandex.prakticum.filmorate.controllers.films.users.storage.mpa.MpaH2dbStorage;
 
@@ -41,23 +42,38 @@ public class FilmH2dbStorage implements FilmStorage {
             statement.setLong(5, film.getMpa().getId());
             return statement;
         }, keyHolder);
+
         return getFilm(keyHolder.getKey().intValue());
+
 
     }
     catch (RuntimeException e){
         throw new IllegalArgumentException("Ошибка при создании фильма");
     }
-
    }
 
     @Override
     public Film updateFilm(Film film) {
-        return film;
+         jdbcTemplate.update(
+                "update films set NAME = ?," +
+                        "DESCRIPTION = ?," +
+                        "RELEASE_DATE = ?," +
+                        "DURATION = ?," +
+                        "MPA_ID = ?" +
+                        " where FILM_ID = ?",
+                film.getName(),
+                film.getDescription(),
+                film.getReleaseDate(),
+                film.getDuration(),
+                film.getMpa().getId(),
+                film.getId());
+        return getFilm(film.getId());
     }
 
     @Override
     public List getAllFilm() {
-        return jdbcTemplate.query("select FILM_ID from FILMS",                (resultSet, rowNum) -> Film.builder()
+        return jdbcTemplate.query("select FILM_ID from FILMS",
+                (resultSet, rowNum) -> Film.builder()
                 .id(resultSet.getInt("FILM_ID"))
                 .name(resultSet.getString("NAME"))
                 .description(resultSet.getString("DESCRIPTION"))
@@ -81,6 +97,14 @@ public class FilmH2dbStorage implements FilmStorage {
     }
 
     private void setGenreByFilm(Film film) {
+        List<Genre> g = film.getGenres();
+        for (Genre genre: g) {
+            jdbcTemplate.update(
+                    "insert into FILM_GENRES (GENRE_ID, FILM_ID) values ( ?,? )",
+                    genre.getId(),film.getId()
+            );
+
+        }
     }
     private Mpa getMPAofFilm(Integer film_id){
         final String sql = "SELECT * FROM MPA_RATING where MPA_ID = (" +
