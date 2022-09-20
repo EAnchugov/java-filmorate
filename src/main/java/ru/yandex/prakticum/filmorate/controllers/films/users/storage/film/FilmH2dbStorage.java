@@ -74,6 +74,14 @@ public class FilmH2dbStorage implements FilmStorage {
                 film.getDuration(),
                 film.getMpa().getId(),
                 film.getId());
+        Integer currentFilmID = film.getId();
+        List<Genre> currentGenres = film.getGenres();
+        if (currentGenres != null) {
+            for (Genre genre : currentGenres) {
+                String sqlGenre = "INSERT INTO film_genres VALUES (?, ?)";
+                jdbcTemplate.update(sqlGenre, genre.getId(), currentFilmID);
+            }
+        }
         return getFilm(film.getId());
     }
 

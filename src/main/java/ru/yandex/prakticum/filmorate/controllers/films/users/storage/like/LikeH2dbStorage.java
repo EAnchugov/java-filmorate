@@ -35,8 +35,12 @@ public class LikeH2dbStorage implements LikeStorage {
     @Override
     public List getFilmTop(Integer count) {
         return jdbcTemplate.query(
-                "select * from FILMS as F LEFT JOIN FILM_LIKES FL on F.FILM_ID = FL.FILM_ID order by count(FL.USER_ID)",
-                (resultSet, rowNum) -> Film.builder()
+                //              "select * from FILMS as F LEFT JOIN FILM_LIKES FL on F.FILM_ID = FL.FILM_ID order by count(FL.USER_ID)",
+
+                "SELECT f.*, m.* FROM FILMS AS f LEFT JOIN FILM_LIKES AS FL ON f.FILM_ID = FL.FILM_ID " +
+                        "LEFT JOIN MPA_RATING AS m ON f.mpa_id = m.mpa_id" +
+                        " GROUP BY f.FILM_ID ORDER BY COUNT(FL.user_id) DESC LIMIT ?",
+        (resultSet, rowNum) -> Film.builder()
                         .id(resultSet.getInt("FILM_ID"))
                         .name(resultSet.getString("NAME"))
                         .description(resultSet.getString("DESCRIPTION"))
