@@ -42,12 +42,19 @@ public class FilmH2dbStorage implements FilmStorage {
             statement.setLong(5, film.getMpa().getId());
             return statement;
         }, keyHolder);
+        Integer currentFilmID = keyHolder.getKey().intValue();
+        List<Genre> currentGenres = film.getGenres();
 
-        return getFilm(keyHolder.getKey().intValue());
-
-
+        if (currentGenres != null) {
+            for (Genre genre : currentGenres) {
+                String sqlGenre = "INSERT INTO film_genres VALUES (?, ?)";
+                jdbcTemplate.update(sqlGenre, genre.getId(), currentFilmID);
+            }
+        }
+        return getFilm(currentFilmID);
     }
     catch (RuntimeException e){
+        log.error(e.getMessage());
         throw new IllegalArgumentException("Ошибка при создании фильма");
     }
    }
@@ -84,8 +91,9 @@ public class FilmH2dbStorage implements FilmStorage {
 
     @Override
     public Film getFilm(Integer id) {
+        Integer filmID = id;
         return jdbcTemplate.queryForObject(
-                "Select * from FILMS where FILM_ID = " + id,
+                "Select * from FILMS where FILM_ID = " + filmID,
                 (resultSet, rowNum) -> Film.builder()
                 .id(resultSet.getInt("FILM_ID"))
                 .name(resultSet.getString("NAME"))
@@ -93,8 +101,23 @@ public class FilmH2dbStorage implements FilmStorage {
                 .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
                 .duration(resultSet.getInt("DURATION"))
                 .mpa(mpaH2dbStorage.getMpa(resultSet.getInt("MPA_ID")))
+                .genres(getgenreoffilm(filmID))
                 .build());
     }
+    private List<Genre> getgenreoffilm(Integer id){
+     //   String sql = "SELECT GENRE_ID from FILM_GENRES where FILM_ID = " + id;
+        String sql = "SELECT * from FILM_GENRES as F " +
+                "LEFT JOIN GENRES G2 on F.GENRE_ID = G2.GENRE_ID where FILM_ID = " + id;
+
+        return jdbcTemplate.query(
+                sql,
+                (rs, rowNum) ->
+                        new Genre(
+                                rs.getInt("GENRE_ID"),
+                                rs.getString("NAME")
+                        )
+        );
+    };
 
     private void setGenreByFilm(Film film) {
         List<Genre> g = film.getGenres();
