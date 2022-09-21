@@ -12,7 +12,9 @@ import ru.yandex.prakticum.filmorate.controllers.films.users.storage.mpa.MpaH2db
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -43,7 +45,7 @@ public class FilmH2dbStorage implements FilmStorage {
             return statement;
         }, keyHolder);
         Integer currentFilmID = keyHolder.getKey().intValue();
-        List<Genre> currentGenres = film.getGenres();
+        Set<Genre> currentGenres = film.getGenres();
 
         if (currentGenres != null) {
             for (Genre genre : currentGenres) {
@@ -75,27 +77,31 @@ public class FilmH2dbStorage implements FilmStorage {
                 film.getMpa().getId(),
                 film.getId());
         Integer currentFilmID = film.getId();
-        List<Genre> currentGenres = film.getGenres();
+        Set<Genre> currentGenres = film.getGenres();
         if (currentGenres != null) {
+            jdbcTemplate.update("Delete from FILM_GENRES where FILM_ID =" + currentFilmID);
             for (Genre genre : currentGenres) {
                 String sqlGenre = "INSERT INTO film_genres VALUES (?, ?)";
                 jdbcTemplate.update(sqlGenre, genre.getId(), currentFilmID);
             }
         }
-        return getFilm(film.getId());
+        return getFilm(currentFilmID);
     }
 
     @Override
     public List getAllFilm() {
-        return jdbcTemplate.query("select FILM_ID from FILMS",
+        return jdbcTemplate.query("select * from FILMS",
                 (resultSet, rowNum) -> Film.builder()
-                .id(resultSet.getInt("FILM_ID"))
-                .name(resultSet.getString("NAME"))
-                .description(resultSet.getString("DESCRIPTION"))
-                .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
-                .duration(resultSet.getInt("DURATION"))
-                .build());
+                        .id(resultSet.getInt("FILM_ID"))
+                        .name(resultSet.getString("NAME"))
+                        .description(resultSet.getString("DESCRIPTION"))
+                        .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
+                        .duration(resultSet.getInt("DURATION"))
+                        .mpa(mpaH2dbStorage.getMpa(resultSet.getInt("MPA_ID")))
+                        .genres(getGenreOfFilm(resultSet.getInt("FILM_ID")))
+                        .build());
     }
+
 
     @Override
     public Film getFilm(Integer id) {
@@ -109,15 +115,14 @@ public class FilmH2dbStorage implements FilmStorage {
                 .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
                 .duration(resultSet.getInt("DURATION"))
                 .mpa(mpaH2dbStorage.getMpa(resultSet.getInt("MPA_ID")))
-                .genres(getgenreoffilm(filmID))
+                .genres(getGenreOfFilm(filmID))
                 .build());
     }
-    private List<Genre> getgenreoffilm(Integer id){
-     //   String sql = "SELECT GENRE_ID from FILM_GENRES where FILM_ID = " + id;
+    public Set<Genre> getGenreOfFilm(Integer id){
         String sql = "SELECT * from FILM_GENRES as F " +
                 "LEFT JOIN GENRES G2 on F.GENRE_ID = G2.GENRE_ID where FILM_ID = " + id;
 
-        return jdbcTemplate.query(
+         List tmpGenres = jdbcTemplate.query(
                 sql,
                 (rs, rowNum) ->
                         new Genre(
@@ -125,16 +130,19 @@ public class FilmH2dbStorage implements FilmStorage {
                                 rs.getString("NAME")
                         )
         );
-    };
+        return new HashSet<>(tmpGenres);
+    }
 
-    private void setGenreByFilm(Film film) {
-        List<Genre> g = film.getGenres();
-        for (Genre genre: g) {
-            jdbcTemplate.update(
-                    "insert into FILM_GENRES (GENRE_ID, FILM_ID) values ( ?,? )",
-                    genre.getId(),film.getId()
-            );
-
+    private void genreUpdate(Film film) {
+        //Собираем старые жанры
+        List<Genre> newGenres = (List<Genre>) getGenreOfFilm(film.getId());
+        final String sqlGenre = "INSERT INTO FILM_GENRES (film_id, genre_id) VALUES (?, ?)";
+        final Set<Genre> genres = film.getGenres();
+        if (genres == null) {
+            return;
+        }
+        for (Genre genre : genres) {
+            jdbcTemplate.update(sqlGenre, film.getId(), genre.getId());
         }
     }
     private Mpa getMPAofFilm(Integer film_id){

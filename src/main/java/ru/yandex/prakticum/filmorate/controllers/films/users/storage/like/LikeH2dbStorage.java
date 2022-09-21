@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.film.FilmH2dbStorage;
 import ru.yandex.prakticum.filmorate.controllers.films.users.storage.mpa.MpaH2dbStorage;
 
 import java.util.List;
@@ -13,10 +14,12 @@ import java.util.List;
 public class LikeH2dbStorage implements LikeStorage {
     private final JdbcTemplate jdbcTemplate;
     private final MpaH2dbStorage mpaH2dbStorage;
+    private final FilmH2dbStorage filmH2dbStorage;
 
-    public LikeH2dbStorage(JdbcTemplate jdbcTemplate, MpaH2dbStorage mpaH2dbStorage) {
+    public LikeH2dbStorage(JdbcTemplate jdbcTemplate, MpaH2dbStorage mpaH2dbStorage, FilmH2dbStorage filmH2dbStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.mpaH2dbStorage = mpaH2dbStorage;
+        this.filmH2dbStorage = filmH2dbStorage;
     }
 
     @Override
@@ -26,27 +29,31 @@ public class LikeH2dbStorage implements LikeStorage {
 
     @Override
     public void removeLike(Integer filmId, Integer userId) {
-        jdbcTemplate.update(
-               "delete from FILM_LIKES where FILM_ID = ?  AND USER_ID = ?",
+        try{
+            jdbcTemplate.update(
+                "delete from FILM_LIKES where FILM_ID = ?  AND USER_ID = ?",
                 filmId, userId);
-
+            log.error("removeLike");
+        } catch (RuntimeException e){
+            throw new IllegalArgumentException("Ошибка при удалении лайка");
+        }
     }
 
     @Override
     public List getFilmTop(Integer count) {
         return jdbcTemplate.query(
-                //              "select * from FILMS as F LEFT JOIN FILM_LIKES FL on F.FILM_ID = FL.FILM_ID order by count(FL.USER_ID)",
+                "SELECT f.*, COUNT (fl.FILM_ID) like_count FROM FILMS AS f " +
+                        "LEFT JOIN FILM_LIKES fl ON f.FILM_ID = fl.FILM_ID " +
+                        "GROUP BY f.FILM_ID ORDER BY like_count LIMIT " + count,
 
-                "SELECT f.*, m.* FROM FILMS AS f LEFT JOIN FILM_LIKES AS FL ON f.FILM_ID = FL.FILM_ID " +
-                        "LEFT JOIN MPA_RATING AS m ON f.mpa_id = m.mpa_id" +
-                        " GROUP BY f.FILM_ID ORDER BY COUNT(FL.user_id) DESC LIMIT ?",
         (resultSet, rowNum) -> Film.builder()
-                        .id(resultSet.getInt("FILM_ID"))
-                        .name(resultSet.getString("NAME"))
-                        .description(resultSet.getString("DESCRIPTION"))
-                        .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
-                        .duration(resultSet.getInt("DURATION"))
-                        .mpa(mpaH2dbStorage.getMpa(resultSet.getInt("MPA_ID")))
-                        .build());
+                .id(resultSet.getInt("FILM_ID"))
+                .name(resultSet.getString("NAME"))
+                .description(resultSet.getString("DESCRIPTION"))
+                .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
+                .duration(resultSet.getInt("DURATION"))
+                .mpa(mpaH2dbStorage.getMpa(resultSet.getInt("MPA_ID")))
+                .genres(filmH2dbStorage.getGenreOfFilm(resultSet.getInt("FILM_ID")))
+                .build());
     }
 }

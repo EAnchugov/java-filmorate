@@ -32,10 +32,9 @@ create table IF NOT EXISTS USERS
     LOGIN    varchar
 );
 
-
 create table film_likes(
-    FILM_ID INTEGER not null references FILMS(FILM_ID) ON DELETE CASCADE,
-    USER_ID INTEGER not null references USERS(USER_ID) ON DELETE CASCADE
+    USER_ID INTEGER not null references USERS(USER_ID) ON DELETE CASCADE,
+    FILM_ID INTEGER not null references FILMS(FILM_ID) ON DELETE CASCADE
 );
 
 create table if not exists film_genres(
