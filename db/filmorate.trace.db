@@ -5465,3 +5465,7 @@ Column "NAME" not found [42122-214]
 	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
 	at java.base/java.lang.Thread.run(Thread.java:829)
+2022-09-22 21:26:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Таблица "FILM_LIKES" уже существует
+Table "FILM_LIKES" already exists; SQL statement:
+create table film_likes( USER_ID INTEGER not null references USERS(USER_ID) ON DELETE CASCADE, FILM_ID INTEGER not null references FILMS(FILM_ID) ON DELETE CASCADE ) [42101-214]
