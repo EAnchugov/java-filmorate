@@ -3,6 +3,7 @@ package ru.yandex.prakticum.filmorate.controllers.films.users.storage.like;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 import ru.yandex.prakticum.filmorate.controllers.films.users.storage.film.FilmH2dbStorage;
 import ru.yandex.prakticum.filmorate.controllers.films.users.storage.mpa.MpaH2dbStorage;
@@ -29,14 +30,10 @@ public class LikeH2dbStorage implements LikeStorage {
 
     @Override
     public void removeLike(Integer filmId, Integer userId) {
-        try{
+
+            String sql = "delete from FILM_LIKES where FILM_ID = ?  AND USER_ID = ?";
             jdbcTemplate.update(
-                "delete from FILM_LIKES where FILM_ID = ?  AND USER_ID = ?",
-                filmId, userId);
-            log.error("removeLike");
-        } catch (RuntimeException e){
-            throw new IllegalArgumentException("Ошибка при удалении лайка");
-        }
+                sql,filmId, userId);
     }
 
     @Override

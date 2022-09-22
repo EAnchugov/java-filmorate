@@ -2,6 +2,7 @@ package ru.yandex.prakticum.filmorate.controllers.films.users.sevice;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 import ru.yandex.prakticum.filmorate.controllers.films.users.storage.like.LikeH2dbStorage;
 
@@ -19,6 +20,9 @@ public class LikeH2dbService {
     }
 
     public void removeLike(Integer filmId, Integer userId) {
+        if (filmId < 0 | userId < 0){
+            throw new NotFoundException("film_id или user_id меньше 0");
+        }
         likeH2dbStorage.removeLike(filmId,userId);
     }
 

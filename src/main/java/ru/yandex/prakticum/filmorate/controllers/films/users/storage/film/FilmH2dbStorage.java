@@ -105,9 +105,8 @@ public class FilmH2dbStorage implements FilmStorage {
 
     @Override
     public Film getFilm(Integer id) {
-        Integer filmID = id;
         return jdbcTemplate.queryForObject(
-                "Select * from FILMS where FILM_ID = " + filmID,
+                "Select * from FILMS where FILM_ID = " + id,
                 (resultSet, rowNum) -> Film.builder()
                 .id(resultSet.getInt("FILM_ID"))
                 .name(resultSet.getString("NAME"))
@@ -115,12 +114,12 @@ public class FilmH2dbStorage implements FilmStorage {
                 .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
                 .duration(resultSet.getInt("DURATION"))
                 .mpa(mpaH2dbStorage.getMpa(resultSet.getInt("MPA_ID")))
-                .genres(getGenreOfFilm(filmID))
+                .genres(getGenreOfFilm(id))
                 .build());
     }
     public Set<Genre> getGenreOfFilm(Integer id){
         String sql = "SELECT * from FILM_GENRES as F " +
-                "LEFT JOIN GENRES G2 on F.GENRE_ID = G2.GENRE_ID where FILM_ID = " + id;
+                "LEFT JOIN GENRES G2 on F.GENRE_ID = G2.GENRE_ID where FILM_ID = " + id + " order by G2.GENRE_ID";
 
          List tmpGenres = jdbcTemplate.query(
                 sql,

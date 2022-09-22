@@ -27,7 +27,6 @@ public class ErrorHandler {
         return new ErrorResponse(
                 e.getMessage());
     }
-    //INTERNAL_SERVER_ERROR
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     private ErrorResponse handle(final Throwable e){
