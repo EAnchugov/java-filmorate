@@ -23,9 +23,6 @@ public class GenresH2dbStorage implements GenresStorage {
         String sql = "SELECT * FROM GENRES order by GENRE_ID";
         return jdbcTemplate.query(
                 sql, this::mapRowToGenre);
-//                (rs, rowNum) -> new Genre(
-//                        rs.getInt(1),
-//                        rs.getString(2)));
     }
     @Override
     public Genre getGenre(Integer id) {

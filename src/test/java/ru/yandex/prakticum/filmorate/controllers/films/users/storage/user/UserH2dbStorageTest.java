@@ -57,4 +57,5 @@ class UserH2dbStorageTest {
         User user3 = userController.createUser(user2);
         assertEquals(userController.getAllUser(), List.of(user1, user3));
     }
+
 }
