@@ -49,7 +49,6 @@ public class FilmH2dbStorage implements FilmStorage {
         }, keyHolder);
         Integer currentFilmID = keyHolder.getKey().intValue();
         Set<Genre> currentGenres = film.getGenres();
-
         if (currentGenres != null) {
             for (Genre genre : currentGenres) {
                 String sqlGenre = "INSERT INTO film_genres VALUES (?, ?)";

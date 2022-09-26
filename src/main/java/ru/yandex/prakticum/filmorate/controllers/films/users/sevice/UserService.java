@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 public class UserService {
     private final UserStorage userStorage;
-    private final UserH2dbStorage userH2dbStorage;
+    private final UserStorage userH2dbStorage;
 
     public User createUser(User user){
         UserCheck.userCheck(user);
