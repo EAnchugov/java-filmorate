@@ -28,17 +28,8 @@ public class ErrorHandler {
                 e.getMessage());
     }
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    private ErrorResponse handle(final Throwable e){
-        log.error("Ошибка " + e.getMessage());
-        return new ErrorResponse(
-                e.getMessage()
-        );
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    private ErrorResponse handle(final IllegalArgumentException e){
+    private ErrorResponse handle(final Throwable e){
         log.error("Ошибка " + e.getMessage());
         return new ErrorResponse(
                 e.getMessage()

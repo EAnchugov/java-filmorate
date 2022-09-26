@@ -10,12 +10,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class GenreService {
-    private static GenresH2dbStorage genresH2dbStorage;
-
-    @Autowired
-    public GenreService(GenresH2dbStorage genresH2dbStorage) {
-        this.genresH2dbStorage = genresH2dbStorage;
-    }
+    private final GenresH2dbStorage genresH2dbStorage;
 
     public List<Genre> getAllGenres() {
         return genresH2dbStorage.getAllGenres();

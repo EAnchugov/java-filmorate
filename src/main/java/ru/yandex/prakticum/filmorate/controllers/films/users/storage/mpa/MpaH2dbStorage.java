@@ -3,6 +3,7 @@ package ru.yandex.prakticum.filmorate.controllers.films.users.storage.mpa;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Mpa;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class MpaH2dbStorage implements MpaStorage{
     }
 
     @Override
-    public List getAllMpa() {
+    public List<Mpa> getAllMpa() {
         String sql = "SELECT * from MPA_RATING";
         return jdbcTemplate.query(
                 sql,
@@ -30,13 +31,17 @@ public class MpaH2dbStorage implements MpaStorage{
 
     @Override
     public Mpa getMpa(Integer id) {
-        String sql = "SELECT * FROM MPA_RATING WHERE MPA_ID = ?";
+        try {
+            String sql = "SELECT * FROM MPA_RATING WHERE MPA_ID = ?";
 
-        return jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) ->
-                new Mpa(
-                        rs.getInt("MPA_ID"),
-                        rs.getString("MPA_NAME")
-                ));
+            return jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) ->
+                    new Mpa(
+                            rs.getInt("MPA_ID"),
+                            rs.getString("MPA_NAME")
+                    ));
+        } catch (RuntimeException e){
+            throw new NotFoundException("Ошибка при получении MPA");
+        }
     }
 
 }

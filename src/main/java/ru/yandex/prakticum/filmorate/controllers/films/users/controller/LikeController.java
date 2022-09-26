@@ -1,7 +1,6 @@
 package ru.yandex.prakticum.filmorate.controllers.films.users.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
@@ -11,37 +10,31 @@ import javax.validation.constraints.Positive;
 import java.util.List;
 
 @RestController
-@Controller
+@Validated
+@RequiredArgsConstructor
 public class LikeController {
 
-    private final LikeH2dbService likeH2dbService;
-    @Autowired
-    public LikeController(LikeH2dbService likeH2dbService) {
-            this.likeH2dbService = likeH2dbService;
-
-        }
+    private final LikeH2dbService likeService;
 
     @PutMapping("/films/{id}/like/{userId}")
     public void addLike(
         @PathVariable("id") Integer filmId,
         @PathVariable("userId") Integer userId
     ) {
-        likeH2dbService.addLike(filmId,userId);
+        likeService.addLike(filmId,userId);
     }
 
     @DeleteMapping("/films/{id}/like/{userId}")
     public void removeLike(@PathVariable("id") Integer filmId,
                            @PathVariable("userId") Integer userId) {
-        likeH2dbService.removeLike(filmId,userId);
+        likeService.removeLike(filmId,userId);
     }
 
     @GetMapping("/films/popular")
-    @ResponseBody
-    @Validated
     public List<Film> getFilmTop(
             @RequestParam (required = false, defaultValue = "10")
             @Positive(message = "should be positive number")Integer count) {
-            return likeH2dbService.getFilmTop(count);
+            return likeService.getFilmTop(count);
     }
 }
 

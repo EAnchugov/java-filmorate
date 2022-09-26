@@ -4,10 +4,11 @@ insert into MPA_RATING(MPA_NAME) values ('PG-13' );
 insert into MPA_RATING(MPA_NAME) values ( 'R' );
 insert into MPA_RATING(MPA_NAME) values ( 'NC-17' );
 
-insert into GENRES(NAME) values ('Комедия');
-insert into GENRES(NAME) values ('Драма');
-insert into GENRES(NAME) values ('Мультфильм');
-insert into GENRES(NAME) values ('Триллер');
-insert into GENRES(NAME) values ('Документальный');
-insert into GENRES(NAME) values ('Боевик');
+merge into GENRES (genre_id, name)
+    values (1, 'Комедия'),
+           (2, 'Драма'),
+           (3, 'Мультфильм'),
+           (4, 'Триллер'),
+           (5, 'Документальный'),
+           (6, 'Боевик');
 

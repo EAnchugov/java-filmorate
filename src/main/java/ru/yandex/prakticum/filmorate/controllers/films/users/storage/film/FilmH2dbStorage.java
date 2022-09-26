@@ -1,13 +1,16 @@
 package ru.yandex.prakticum.filmorate.controllers.films.users.storage.film;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Genre;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Mpa;
+import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.MpaService;
 import ru.yandex.prakticum.filmorate.controllers.films.users.storage.mpa.MpaH2dbStorage;
 
 import java.sql.Date;
@@ -17,15 +20,15 @@ import java.util.List;
 import java.util.Set;
 
 @Slf4j
-@Component
+@Repository
 public class FilmH2dbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private final MpaH2dbStorage mpaH2dbStorage;
+    private final MpaService mpaService;
     @Autowired
-    public FilmH2dbStorage(JdbcTemplate jdbcTemplate, MpaH2dbStorage mpaH2dbStorage) {
+    public FilmH2dbStorage(JdbcTemplate jdbcTemplate, MpaService mpaService) {
         this.jdbcTemplate = jdbcTemplate;
-        this.mpaH2dbStorage = mpaH2dbStorage;
+        this.mpaService = mpaService;
     }
 
     @Override
@@ -97,25 +100,28 @@ public class FilmH2dbStorage implements FilmStorage {
                         .description(resultSet.getString("DESCRIPTION"))
                         .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
                         .duration(resultSet.getInt("DURATION"))
-                        .mpa(mpaH2dbStorage.getMpa(resultSet.getInt("MPA_ID")))
+                        .mpa(mpaService.getMpa(resultSet.getInt("MPA_ID")))
                         .genres(getGenreOfFilm(resultSet.getInt("FILM_ID")))
                         .build());
     }
 
-
     @Override
     public Film getFilm(Integer id) {
-        return jdbcTemplate.queryForObject(
-                "Select * from FILMS where FILM_ID = " + id,
-                (resultSet, rowNum) -> Film.builder()
-                .id(resultSet.getInt("FILM_ID"))
-                .name(resultSet.getString("NAME"))
-                .description(resultSet.getString("DESCRIPTION"))
-                .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
-                .duration(resultSet.getInt("DURATION"))
-                .mpa(mpaH2dbStorage.getMpa(resultSet.getInt("MPA_ID")))
-                .genres(getGenreOfFilm(id))
-                .build());
+        try {
+            return jdbcTemplate.queryForObject(
+                    "Select * from FILMS where FILM_ID = " + id,
+                    (resultSet, rowNum) -> Film.builder()
+                            .id(resultSet.getInt("FILM_ID"))
+                            .name(resultSet.getString("NAME"))
+                            .description(resultSet.getString("DESCRIPTION"))
+                            .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
+                            .duration(resultSet.getInt("DURATION"))
+                            .mpa(mpaService.getMpa(resultSet.getInt("MPA_ID")))
+                            .genres(getGenreOfFilm(id))
+                            .build());
+        } catch (RuntimeException e){
+            throw new NotFoundException("Ошибка при получении фильма");
+        }
     }
     public Set<Genre> getGenreOfFilm(Integer id){
         String sql = "SELECT * from FILM_GENRES as F " +

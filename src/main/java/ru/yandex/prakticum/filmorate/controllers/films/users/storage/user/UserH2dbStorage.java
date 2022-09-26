@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
 import ru.yandex.prakticum.filmorate.controllers.films.users.storage.user.UserStorage;
 
@@ -63,8 +64,13 @@ public class UserH2dbStorage implements UserStorage {
 
     @Override
     public User getUser(Integer id) {
-                String sqlQuery = "select * from USERS where USER_ID = ?";
-        return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
+        try {
+            String sqlQuery = "select * from USERS where USER_ID = ?";
+            return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
+        }
+        catch (RuntimeException e){
+            throw new NotFoundException("Ошибка при получении юзера");
+        }
 
     }
 

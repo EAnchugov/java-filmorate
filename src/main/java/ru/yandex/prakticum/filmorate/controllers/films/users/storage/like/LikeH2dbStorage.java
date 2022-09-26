@@ -3,23 +3,25 @@ package ru.yandex.prakticum.filmorate.controllers.films.users.storage.like;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
+import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.MpaService;
 import ru.yandex.prakticum.filmorate.controllers.films.users.storage.film.FilmH2dbStorage;
 import ru.yandex.prakticum.filmorate.controllers.films.users.storage.mpa.MpaH2dbStorage;
 
 import java.util.List;
 
 @Slf4j
-@Component
+@Repository
 public class LikeH2dbStorage implements LikeStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final MpaH2dbStorage mpaH2dbStorage;
+    private final MpaService mpaService;
     private final FilmH2dbStorage filmH2dbStorage;
 
-    public LikeH2dbStorage(JdbcTemplate jdbcTemplate, MpaH2dbStorage mpaH2dbStorage, FilmH2dbStorage filmH2dbStorage) {
+    public LikeH2dbStorage(JdbcTemplate jdbcTemplate, MpaService mpaService, FilmH2dbStorage filmH2dbStorage) {
         this.jdbcTemplate = jdbcTemplate;
-        this.mpaH2dbStorage = mpaH2dbStorage;
+        this.mpaService = mpaService;
         this.filmH2dbStorage = filmH2dbStorage;
     }
 
@@ -37,7 +39,7 @@ public class LikeH2dbStorage implements LikeStorage {
     }
 
     @Override
-    public List getFilmTop(Integer count) {
+    public List<Film> getFilmTop(Integer count) {
         return jdbcTemplate.query(
                 "SELECT f.*, COUNT (fl.FILM_ID) like_count FROM FILMS AS f " +
                         "LEFT JOIN FILM_LIKES fl ON f.FILM_ID = fl.FILM_ID " +
@@ -49,7 +51,7 @@ public class LikeH2dbStorage implements LikeStorage {
                 .description(resultSet.getString("DESCRIPTION"))
                 .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
                 .duration(resultSet.getInt("DURATION"))
-                .mpa(mpaH2dbStorage.getMpa(resultSet.getInt("MPA_ID")))
+                .mpa(mpaService.getMpa(resultSet.getInt("MPA_ID")))
                 .genres(filmH2dbStorage.getGenreOfFilm(resultSet.getInt("FILM_ID")))
                 .build());
     }

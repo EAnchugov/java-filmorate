@@ -5,10 +5,7 @@ import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 import java.util.List;
 
 public interface LikeStorage {
-//    void addLike(Integer filmId, Integer userId);
-//    void removeLike(Integer filmId, Integer userId);
-//    List getFilmTop(Integer count);
     void addLike(Integer filmId, Integer userId);
     void removeLike(Integer filmId, Integer userId);
-    List getFilmTop(Integer count);
+    List<Film> getFilmTop(Integer count);
 }

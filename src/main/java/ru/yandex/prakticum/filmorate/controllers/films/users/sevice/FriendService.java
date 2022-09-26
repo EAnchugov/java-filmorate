@@ -1,23 +1,18 @@
 package ru.yandex.prakticum.filmorate.controllers.films.users.sevice;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
-import ru.yandex.prakticum.filmorate.controllers.films.users.storage.friend.FriendH2dbStorage;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.friend.FriendStorage;
 
 import java.util.List;
 
 
 @Service
+@RequiredArgsConstructor
 public class FriendService {
     private final UserService userService;
-    private final FriendH2dbStorage friendH2dbStorage;
-
-    @Autowired
-    public FriendService(UserService userService, FriendH2dbStorage friendH2dbStorage){
-        this.userService = userService;
-        this.friendH2dbStorage = friendH2dbStorage;
-    }
+    private final FriendStorage friendH2dbStorage;
 
     public void addFriend(Integer userId,Integer friendId){
         friendH2dbStorage.addFriend(userId,friendId);

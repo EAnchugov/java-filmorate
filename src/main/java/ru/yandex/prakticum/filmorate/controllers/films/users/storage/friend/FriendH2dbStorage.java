@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Component
-public class FriendH2dbStorage implements friendStorage {
+public class FriendH2dbStorage implements FriendStorage {
     private final JdbcTemplate jdbcTemplate;
     @Autowired
     public FriendH2dbStorage(JdbcTemplate jdbcTemplate) {
