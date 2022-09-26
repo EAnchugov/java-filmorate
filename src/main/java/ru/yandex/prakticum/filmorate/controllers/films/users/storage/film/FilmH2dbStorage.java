@@ -9,9 +9,7 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Genre;
-import ru.yandex.prakticum.filmorate.controllers.films.users.model.Mpa;
 import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.MpaService;
-import ru.yandex.prakticum.filmorate.controllers.films.users.storage.Builders;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -28,7 +26,7 @@ public class FilmH2dbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final MpaService mpaService;
     @Autowired
-    public FilmH2dbStorage(JdbcTemplate jdbcTemplate, MpaService mpaService, Builders builders) {
+    public FilmH2dbStorage(JdbcTemplate jdbcTemplate, MpaService mpaService) {
         this.jdbcTemplate = jdbcTemplate;
         this.mpaService = mpaService;
     }
@@ -134,27 +132,5 @@ public class FilmH2dbStorage implements FilmStorage {
                 .mpa(mpaService.getMpa(resultSet.getInt("MPA_ID")))
                 .genres(getGenreOfFilm(resultSet.getInt("FILM_ID")))
                 .build();
-    };
-
-    private void genreUpdate(Film film) {
-        //Собираем старые жанры
-        List<Genre> newGenres = (List<Genre>) getGenreOfFilm(film.getId());
-        final String sqlGenre = "INSERT INTO FILM_GENRES (film_id, genre_id) VALUES (?, ?)";
-        final Set<Genre> genres = film.getGenres();
-        if (genres == null) {
-            return;
-        }
-        for (Genre genre : genres) {
-            jdbcTemplate.update(sqlGenre, film.getId(), genre.getId());
-        }
-    }
-    private Mpa getMPAofFilm(Integer film_id){
-        final String sql = "SELECT * FROM MPA_RATING where MPA_ID = (" +
-                "SELECT MPA_ID FROM FILMS WHERE FILM_ID =" + film_id +")";
-        return jdbcTemplate.queryForObject(sql, new Object[]{film_id}, (rs, rowNum) ->
-                new Mpa(
-                        rs.getInt("MPA_ID"),
-                        rs.getString("MPA_NAME")
-                       ));
     }
 }

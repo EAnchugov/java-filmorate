@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Mpa;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 @Slf4j
 @Component
@@ -21,12 +23,7 @@ public class MpaH2dbStorage implements MpaStorage{
         String sql = "SELECT * from MPA_RATING";
         return jdbcTemplate.query(
                 sql,
-                (rs, rowNum) ->
-                        new Mpa(
-                                rs.getInt("MPA_ID"),
-                                rs.getString("MPA_NAME")
-                        )
-        );
+                (rs, rowNum) -> mpaMapper(rs));
     }
 
     @Override
@@ -34,14 +31,17 @@ public class MpaH2dbStorage implements MpaStorage{
         try {
             String sql = "SELECT * FROM MPA_RATING WHERE MPA_ID = ?";
 
-            return jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) ->
-                    new Mpa(
-                            rs.getInt("MPA_ID"),
-                            rs.getString("MPA_NAME")
-                    ));
+            return jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) -> mpaMapper(rs));
         } catch (RuntimeException e){
             throw new NotFoundException("Ошибка при получении MPA");
         }
+    }
+
+    public Mpa mpaMapper(ResultSet resultSet) throws SQLException {
+        return Mpa.builder()
+                .id(resultSet.getInt("MPA_ID"))
+                .name(resultSet.getString("MPA_NAME"))
+                .build();
     }
 
 }
