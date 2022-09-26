@@ -6,14 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.yandex.prakticum.filmorate.controllers.films.users.controller.GenresController;
 import ru.yandex.prakticum.filmorate.controllers.films.users.controller.UserController;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
+import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.FriendService;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserH2dbStorageTest {
     @Autowired
     private UserController userController;
+    private FriendService friendService;
 
     User user = User.builder()
             .email("user1@a")

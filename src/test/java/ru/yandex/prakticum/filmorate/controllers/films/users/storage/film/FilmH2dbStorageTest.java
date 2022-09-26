@@ -24,9 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class FilmH2dbStorageTest {
     @Autowired
     private FilmController filmController;
-    @Autowired
-    private UserController userController;
-    private GenresController genresController;
     Film film = Film.builder()
             .name("Fi")
             .description("Film")

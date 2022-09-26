@@ -11,10 +11,12 @@ import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Genre;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Mpa;
 import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.MpaService;
-import ru.yandex.prakticum.filmorate.controllers.films.users.storage.mpa.MpaH2dbStorage;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.Builders;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,7 +28,7 @@ public class FilmH2dbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final MpaService mpaService;
     @Autowired
-    public FilmH2dbStorage(JdbcTemplate jdbcTemplate, MpaService mpaService) {
+    public FilmH2dbStorage(JdbcTemplate jdbcTemplate, MpaService mpaService, Builders builders) {
         this.jdbcTemplate = jdbcTemplate;
         this.mpaService = mpaService;
     }
@@ -94,15 +96,7 @@ public class FilmH2dbStorage implements FilmStorage {
     @Override
     public List getAllFilm() {
         return jdbcTemplate.query("select * from FILMS",
-                (resultSet, rowNum) -> Film.builder()
-                        .id(resultSet.getInt("FILM_ID"))
-                        .name(resultSet.getString("NAME"))
-                        .description(resultSet.getString("DESCRIPTION"))
-                        .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
-                        .duration(resultSet.getInt("DURATION"))
-                        .mpa(mpaService.getMpa(resultSet.getInt("MPA_ID")))
-                        .genres(getGenreOfFilm(resultSet.getInt("FILM_ID")))
-                        .build());
+                (resultSet, rowNum) -> filmBuilder(resultSet));
     }
 
     @Override
@@ -110,15 +104,7 @@ public class FilmH2dbStorage implements FilmStorage {
         try {
             return jdbcTemplate.queryForObject(
                     "Select * from FILMS where FILM_ID = " + id,
-                    (resultSet, rowNum) -> Film.builder()
-                            .id(resultSet.getInt("FILM_ID"))
-                            .name(resultSet.getString("NAME"))
-                            .description(resultSet.getString("DESCRIPTION"))
-                            .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
-                            .duration(resultSet.getInt("DURATION"))
-                            .mpa(mpaService.getMpa(resultSet.getInt("MPA_ID")))
-                            .genres(getGenreOfFilm(id))
-                            .build());
+                    (resultSet, rowNum) -> filmBuilder(resultSet));
         } catch (RuntimeException e){
             throw new NotFoundException("Ошибка при получении фильма");
         }
@@ -137,6 +123,18 @@ public class FilmH2dbStorage implements FilmStorage {
         );
         return new HashSet<>(tmpGenres);
     }
+
+    public Film filmBuilder(ResultSet resultSet) throws SQLException {
+        return Film.builder()
+                .id(resultSet.getInt("FILM_ID"))
+                .name(resultSet.getString("NAME"))
+                .description(resultSet.getString("DESCRIPTION"))
+                .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
+                .duration(resultSet.getInt("DURATION"))
+                .mpa(mpaService.getMpa(resultSet.getInt("MPA_ID")))
+                .genres(getGenreOfFilm(resultSet.getInt("FILM_ID")))
+                .build();
+    };
 
     private void genreUpdate(Film film) {
         //Собираем старые жанры
