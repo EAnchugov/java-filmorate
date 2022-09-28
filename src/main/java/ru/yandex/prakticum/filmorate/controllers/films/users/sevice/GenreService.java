@@ -5,12 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Genre;
 import ru.yandex.prakticum.filmorate.controllers.films.users.storage.genres.GenresH2dbStorage;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.genres.GenresStorage;
+
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class GenreService {
-    private final GenresH2dbStorage genresH2dbStorage;
+    private final GenresStorage genresH2dbStorage;
 
     public List<Genre> getAllGenres() {
         return genresH2dbStorage.getAllGenres();

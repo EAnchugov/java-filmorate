@@ -27,17 +27,16 @@ public class MpaH2dbStorage implements MpaStorage{
     }
 
     @Override
-    public Mpa getMpa(Integer id) {
-        try {
+    public Mpa getMpa(int id) {
+        if(id > 0){
             String sql = "SELECT * FROM MPA_RATING WHERE MPA_ID = ?";
-
             return jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) -> mpaMapper(rs));
-        } catch (RuntimeException e){
+        } else {
             throw new NotFoundException("Ошибка при получении MPA");
         }
     }
 
-    public Mpa mpaMapper(ResultSet resultSet) throws SQLException {
+    private Mpa mpaMapper(ResultSet resultSet) throws SQLException {
         return Mpa.builder()
                 .id(resultSet.getInt("MPA_ID"))
                 .name(resultSet.getString("MPA_NAME"))

@@ -20,11 +20,5 @@ public class User {
     private String login;
     private String name;
     private LocalDate birthday;
-
     private Set<Integer> friendsStorage = new HashSet<>();
-    public void setFriend(Integer id){friendsStorage.add(id);}
-    public void removeFriend(Integer id){friendsStorage.remove(id);}
-    public boolean containFriend(Integer id){
-        return friendsStorage.contains(id);
-    }
 }

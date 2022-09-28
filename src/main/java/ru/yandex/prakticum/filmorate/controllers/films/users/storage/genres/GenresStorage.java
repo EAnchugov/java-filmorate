@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface GenresStorage {
     List<Genre> getAllGenres();
-    Genre getGenre(Integer id);
+    Genre getGenre(int id);
 
 }

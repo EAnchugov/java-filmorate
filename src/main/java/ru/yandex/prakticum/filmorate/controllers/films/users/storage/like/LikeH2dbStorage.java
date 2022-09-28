@@ -6,9 +6,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
+import ru.yandex.prakticum.filmorate.controllers.films.users.model.Mpa;
 import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.MpaService;
 import ru.yandex.prakticum.filmorate.controllers.films.users.storage.film.FilmH2dbStorage;
 import ru.yandex.prakticum.filmorate.controllers.films.users.storage.mpa.MpaH2dbStorage;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.mpa.MpaStorage;
 
 import java.util.List;
 
@@ -16,12 +18,11 @@ import java.util.List;
 @Repository
 public class LikeH2dbStorage implements LikeStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final MpaService mpaService;
+
     private final FilmH2dbStorage filmH2dbStorage;
 
-    public LikeH2dbStorage(JdbcTemplate jdbcTemplate, MpaService mpaService, FilmH2dbStorage filmH2dbStorage) {
+    public LikeH2dbStorage(JdbcTemplate jdbcTemplate, FilmH2dbStorage filmH2dbStorage) {
         this.jdbcTemplate = jdbcTemplate;
-        this.mpaService = mpaService;
         this.filmH2dbStorage = filmH2dbStorage;
     }
 
@@ -32,7 +33,6 @@ public class LikeH2dbStorage implements LikeStorage {
 
     @Override
     public void removeLike(Integer filmId, Integer userId) {
-
             String sql = "delete from FILM_LIKES where FILM_ID = ?  AND USER_ID = ?";
             jdbcTemplate.update(
                 sql,filmId, userId);
@@ -41,8 +41,9 @@ public class LikeH2dbStorage implements LikeStorage {
     @Override
     public List<Film> getFilmTop(Integer count) {
         return jdbcTemplate.query(
-                "SELECT f.*, COUNT (fl.FILM_ID) like_count FROM FILMS AS f " +
+                "SELECT mr.*, f.*, COUNT (fl.FILM_ID) like_count FROM FILMS AS f " +
                         "LEFT JOIN FILM_LIKES fl ON f.FILM_ID = fl.FILM_ID " +
+                        "LEFT JOIN MPA_RATING mr ON mr.MPA_ID = f.MPA_ID " +
                         "GROUP BY f.FILM_ID ORDER BY like_count LIMIT " + count,
 
         (resultSet, rowNum) -> Film.builder()
@@ -51,7 +52,11 @@ public class LikeH2dbStorage implements LikeStorage {
                 .description(resultSet.getString("DESCRIPTION"))
                 .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
                 .duration(resultSet.getInt("DURATION"))
-                .mpa(mpaService.getMpa(resultSet.getInt("MPA_ID")))
+                .mpa(Mpa.builder()
+                        .name(resultSet.getString("MPA_NAME"))
+                        .id(resultSet.getInt("MPA_ID"))
+                        .build()
+                )
                 .genres(filmH2dbStorage.getGenreOfFilm(resultSet.getInt("FILM_ID")))
                 .build());
     }

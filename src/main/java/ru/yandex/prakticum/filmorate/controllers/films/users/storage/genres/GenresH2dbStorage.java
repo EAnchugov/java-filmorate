@@ -25,11 +25,12 @@ public class GenresH2dbStorage implements GenresStorage {
                 sql, this::mapRowToGenre);
     }
     @Override
-    public Genre getGenre(Integer id) {
-        try {
+    public Genre getGenre(int id) {
+        if (id > 0){
             String sql = "SELECT * from GENRES where GENRE_ID = ? order by GENRE_ID DESC ";
             return jdbcTemplate.queryForObject(sql, this::mapRowToGenre, id);
-        } catch (RuntimeException e){
+        }
+        else {
             throw new NotFoundException("Ошибка при получении жанра");
         }
     }

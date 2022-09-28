@@ -9,7 +9,8 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Genre;
-import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.MpaService;
+import ru.yandex.prakticum.filmorate.controllers.films.users.model.Mpa;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.mpa.MpaStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -24,16 +25,16 @@ import java.util.Set;
 public class FilmH2dbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private final MpaService mpaService;
+    private final MpaStorage mpaH2dbStorage;
     @Autowired
-    public FilmH2dbStorage(JdbcTemplate jdbcTemplate, MpaService mpaService) {
+    public FilmH2dbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaH2dbStorage) {
         this.jdbcTemplate = jdbcTemplate;
-        this.mpaService = mpaService;
+        this.mpaH2dbStorage = mpaH2dbStorage;
     }
 
     @Override
     public Film addFilm(Film film) {
-    try {
+
         String sqlMessage
                 = "insert into FILMS(name, description, release_date, duration, mpa_id)" +
                 "values ( ?, ?, ?, ?, ? )";
@@ -56,11 +57,6 @@ public class FilmH2dbStorage implements FilmStorage {
             }
         }
         return getFilm(currentFilmID);
-    }
-    catch (RuntimeException e){
-        log.error(e.getMessage());
-        throw new IllegalArgumentException("Ошибка при создании фильма");
-    }
    }
 
     @Override
@@ -81,7 +77,7 @@ public class FilmH2dbStorage implements FilmStorage {
         Integer currentFilmID = film.getId();
         Set<Genre> currentGenres = film.getGenres();
         if (currentGenres != null) {
-            jdbcTemplate.update("Delete from FILM_GENRES where FILM_ID =" + currentFilmID);
+            deleteGenres(currentFilmID);
             for (Genre genre : currentGenres) {
                 String sqlGenre = "INSERT INTO film_genres VALUES (?, ?)";
                 jdbcTemplate.update(sqlGenre, genre.getId(), currentFilmID);
@@ -92,19 +88,20 @@ public class FilmH2dbStorage implements FilmStorage {
 
     @Override
     public List getAllFilm() {
-        return jdbcTemplate.query("select * from FILMS",
+        return jdbcTemplate.query("select * from FILMS AS f LEFT JOIN MPA_RATING mr ON mr.MPA_ID = f.MPA_ID",
                 (resultSet, rowNum) -> filmBuilder(resultSet));
     }
 
     @Override
-    public Film getFilm(Integer id) {
+    public Film getFilm(int id) {
         try {
-            return jdbcTemplate.queryForObject(
-                    "Select * from FILMS where FILM_ID = " + id,
+            return jdbcTemplate.queryForObject("Select * from FILMS AS f " +
+                            "LEFT JOIN MPA_RATING mr ON mr.MPA_ID = f.MPA_ID where f.FILM_ID = " + id,
                     (resultSet, rowNum) -> filmBuilder(resultSet));
         } catch (RuntimeException e){
             throw new NotFoundException("Ошибка при получении фильма");
         }
+
     }
     public Set<Genre> getGenreOfFilm(Integer id){
         String sql = "SELECT * from FILM_GENRES as F " +
@@ -128,8 +125,15 @@ public class FilmH2dbStorage implements FilmStorage {
                 .description(resultSet.getString("DESCRIPTION"))
                 .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
                 .duration(resultSet.getInt("DURATION"))
-                .mpa(mpaService.getMpa(resultSet.getInt("MPA_ID")))
+                .mpa(Mpa.builder()
+                        .name(resultSet.getString("MPA_NAME"))
+                        .id(resultSet.getInt("MPA_ID"))
+                        .build()
+                )
                 .genres(getGenreOfFilm(resultSet.getInt("FILM_ID")))
                 .build();
+    }
+    private void deleteGenres(int id){
+        jdbcTemplate.update("Delete from FILM_GENRES where FILM_ID =" + id);
     }
 }

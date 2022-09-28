@@ -31,7 +31,7 @@ public class InMemoryUserStorage implements UserStorage {
         return new ArrayList<>(users.values());
     }
 
-    public User getUser(Integer id) {
+    public User getUser(int id) {
         return users.get(id);
     }
 }

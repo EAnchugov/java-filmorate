@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
-import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.LikeH2dbService;
+import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.LikeService;
 
 import javax.validation.constraints.Positive;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LikeController {
 
-    private final LikeH2dbService likeService;
+    private final LikeService likeService;
 
     @PutMapping("/films/{id}/like/{userId}")
     public void addLike(

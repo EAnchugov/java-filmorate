@@ -13,7 +13,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class UserService {
-    private final UserStorage userStorage;
     private final UserStorage userH2dbStorage;
 
     public User createUser(User user){
@@ -31,7 +30,7 @@ public class UserService {
     }
 
     public List<User> getAllUser(){
-        return userStorage.getAllUser();
+        return userH2dbStorage.getAllUser();
     }
 
     public User getUser(Integer id) {
