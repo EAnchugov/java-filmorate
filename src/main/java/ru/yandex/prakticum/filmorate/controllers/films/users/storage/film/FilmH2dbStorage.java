@@ -16,6 +16,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,11 +26,10 @@ import java.util.Set;
 public class FilmH2dbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private final MpaStorage mpaH2dbStorage;
+
     @Autowired
-    public FilmH2dbStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaH2dbStorage) {
+    public FilmH2dbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.mpaH2dbStorage = mpaH2dbStorage;
     }
 
     @Override
@@ -50,13 +50,11 @@ public class FilmH2dbStorage implements FilmStorage {
         }, keyHolder);
         Integer currentFilmID = keyHolder.getKey().intValue();
         Set<Genre> currentGenres = film.getGenres();
+        Film film1 = getFilm(currentFilmID);
         if (currentGenres != null) {
-            for (Genre genre : currentGenres) {
-                String sqlGenre = "INSERT INTO film_genres VALUES (?, ?)";
-                jdbcTemplate.update(sqlGenre, genre.getId(), currentFilmID);
-            }
+            addGenresToFilm(currentGenres,film1);
         }
-        return getFilm(currentFilmID);
+        return film1;
    }
 
     @Override
@@ -78,10 +76,7 @@ public class FilmH2dbStorage implements FilmStorage {
         Set<Genre> currentGenres = film.getGenres();
         if (currentGenres != null) {
             deleteGenres(currentFilmID);
-            for (Genre genre : currentGenres) {
-                String sqlGenre = "INSERT INTO film_genres VALUES (?, ?)";
-                jdbcTemplate.update(sqlGenre, genre.getId(), currentFilmID);
-            }
+            addGenresToFilm(currentGenres,film);
         }
         return getFilm(currentFilmID);
     }
@@ -135,5 +130,13 @@ public class FilmH2dbStorage implements FilmStorage {
     }
     private void deleteGenres(int id){
         jdbcTemplate.update("Delete from FILM_GENRES where FILM_ID =" + id);
+    }
+    private void addGenresToFilm (Set<Genre> currentGenres, Film film){
+        List<Object[]> batch = new ArrayList<Object[]>();
+        for (Genre genre : currentGenres) {
+            batch.add(new Object[]{genre.getId(), film.getId()});
+        }
+        jdbcTemplate.batchUpdate("INSERT INTO film_genres (GENRE_ID,FILM_ID) values (?, ?)",batch);
+
     }
 }
