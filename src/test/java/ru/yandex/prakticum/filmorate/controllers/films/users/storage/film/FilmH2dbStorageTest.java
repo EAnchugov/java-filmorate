@@ -14,6 +14,8 @@ import ru.yandex.prakticum.filmorate.controllers.films.users.model.Mpa;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
@@ -30,6 +32,7 @@ class FilmH2dbStorageTest {
             .duration(111)
             .releaseDate(LocalDate.of(2000, 1, 1))
             .mpa(Mpa.builder().id(1).name("G").build())
+            .genres(new HashSet<>())
             .build();
     User user = User.builder()
             .email("user1@a")
