@@ -49,11 +49,11 @@ public class FilmH2dbStorage implements FilmStorage {
         }, keyHolder);
         Integer currentFilmID = keyHolder.getKey().intValue();
         Set<Genre> currentGenres = film.getGenres();
-        Film film1 = getFilm(currentFilmID);
+        film.setId(currentFilmID);
         if (currentGenres != null) {
-            addGenresToFilm(currentGenres,film1);
+            addGenresToFilm(currentGenres,film);
         }
-        return film1;
+        return film;
    }
 
     @Override
