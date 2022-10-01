@@ -10,7 +10,7 @@ import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFound
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Genre;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Mpa;
-import ru.yandex.prakticum.filmorate.controllers.films.users.storage.genres.GenresStorage;
+import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.GenreService;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -25,12 +25,12 @@ import java.util.Set;
 public class FilmH2dbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private final GenresStorage genresStorage;
+    private final GenreService genreService;
 
     @Autowired
-    public FilmH2dbStorage(JdbcTemplate jdbcTemplate, GenresStorage genresStorage) {
+    public FilmH2dbStorage(JdbcTemplate jdbcTemplate, GenreService genreService) {
         this.jdbcTemplate = jdbcTemplate;
-        this.genresStorage = genresStorage;
+        this.genreService = genreService;
     }
 
     @Override
@@ -100,8 +100,7 @@ public class FilmH2dbStorage implements FilmStorage {
 
     }
 
-
-    public Film filmBuilder(ResultSet resultSet) throws SQLException {
+    private Film filmBuilder(ResultSet resultSet) throws SQLException {
         return Film.builder()
                 .id(resultSet.getInt("FILM_ID"))
                 .name(resultSet.getString("NAME"))
@@ -113,7 +112,7 @@ public class FilmH2dbStorage implements FilmStorage {
                         .id(resultSet.getInt("MPA_ID"))
                         .build()
                 )
-                .genres(genresStorage.getGenreOfFilm(resultSet.getInt("FILM_ID")))
+                .genres(genreService.getGenreOfFilm(resultSet.getInt("FILM_ID")))
                 .build();
     }
     private void deleteGenres(int id){

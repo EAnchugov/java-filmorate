@@ -6,8 +6,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Mpa;
-import ru.yandex.prakticum.filmorate.controllers.films.users.storage.genres.GenresStorage;
+import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.GenreService;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 @Slf4j
@@ -15,8 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LikeH2dbStorage implements LikeStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final GenresStorage genresStorage;
-
+    private final GenreService genreService;
 
     @Override
     public void addLike(Integer filmId, Integer userId) {
@@ -38,7 +39,10 @@ public class LikeH2dbStorage implements LikeStorage {
                         "LEFT JOIN MPA_RATING mr ON mr.MPA_ID = f.MPA_ID " +
                         "GROUP BY f.FILM_ID ORDER BY like_count LIMIT " + count,
 
-        (resultSet, rowNum) -> Film.builder()
+        (resultSet, rowNum) -> filmBuilder(resultSet));
+    }
+    private Film filmBuilder(ResultSet resultSet) throws SQLException {
+        return Film.builder()
                 .id(resultSet.getInt("FILM_ID"))
                 .name(resultSet.getString("NAME"))
                 .description(resultSet.getString("DESCRIPTION"))
@@ -49,7 +53,7 @@ public class LikeH2dbStorage implements LikeStorage {
                         .id(resultSet.getInt("MPA_ID"))
                         .build()
                 )
-                .genres(genresStorage.getGenreOfFilm(resultSet.getInt("FILM_ID")))
-                .build());
+                .genres(genreService.getGenreOfFilm(resultSet.getInt("FILM_ID")))
+                .build();
     }
 }
