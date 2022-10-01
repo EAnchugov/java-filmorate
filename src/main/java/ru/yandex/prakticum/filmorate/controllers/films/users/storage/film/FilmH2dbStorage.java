@@ -120,7 +120,7 @@ public class FilmH2dbStorage implements FilmStorage {
         jdbcTemplate.update("Delete from FILM_GENRES where FILM_ID =" + id);
     }
     private void addGenresToFilm (Set<Genre> currentGenres, Film film){
-        List<Object[]> batch = new ArrayList<Object[]>();
+        List<Object[]> batch = new ArrayList<>();
         for (Genre genre : currentGenres) {
             batch.add(new Object[]{genre.getId(), film.getId()});
         }
