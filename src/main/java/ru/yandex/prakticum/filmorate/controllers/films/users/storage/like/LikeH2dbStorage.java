@@ -3,16 +3,10 @@ package ru.yandex.prakticum.filmorate.controllers.films.users.storage.like;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
-import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Mpa;
-import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.FilmService;
-import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.MpaService;
-import ru.yandex.prakticum.filmorate.controllers.films.users.storage.film.FilmH2dbStorage;
-import ru.yandex.prakticum.filmorate.controllers.films.users.storage.mpa.MpaH2dbStorage;
-import ru.yandex.prakticum.filmorate.controllers.films.users.storage.mpa.MpaStorage;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.genres.GenresStorage;
 
 import java.util.List;
 
@@ -21,9 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LikeH2dbStorage implements LikeStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final FilmService filmService;
-
- //   private final FilmH2dbStorage filmH2dbStorage;
+    private final GenresStorage genresStorage;
 
 
     @Override
@@ -57,7 +49,7 @@ public class LikeH2dbStorage implements LikeStorage {
                         .id(resultSet.getInt("MPA_ID"))
                         .build()
                 )
-                .genres(filmService.getFilm(resultSet.getInt("FILM_ID")).getGenres())
+                .genres(genresStorage.getGenreOfFilm(resultSet.getInt("FILM_ID")))
                 .build());
     }
 }

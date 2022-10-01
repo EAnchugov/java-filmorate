@@ -9,7 +9,10 @@ import ru.yandex.prakticum.filmorate.controllers.films.users.model.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 @Slf4j
 @Component
 public class GenresH2dbStorage implements GenresStorage {
@@ -33,6 +36,22 @@ public class GenresH2dbStorage implements GenresStorage {
         else {
             throw new NotFoundException("Ошибка при получении жанра");
         }
+    }
+
+    @Override
+    public Set<Genre> getGenreOfFilm(Integer id) {
+        String sql = "SELECT * from FILM_GENRES as F " +
+                "LEFT JOIN GENRES G2 on F.GENRE_ID = G2.GENRE_ID where FILM_ID = " + id + " order by G2.GENRE_ID";
+
+        List tmpGenres = jdbcTemplate.query(
+                sql,
+                (rs, rowNum) ->
+                        new Genre(
+                                rs.getInt("GENRE_ID"),
+                                rs.getString("NAME")
+                        )
+        );
+        return new HashSet<>(tmpGenres);
     }
 
     private Genre mapRowToGenre(ResultSet resultSet, int rowNum) throws SQLException {

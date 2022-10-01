@@ -10,13 +10,13 @@ import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFound
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Genre;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Mpa;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.genres.GenresStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -25,10 +25,12 @@ import java.util.Set;
 public class FilmH2dbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
+    private final GenresStorage genresStorage;
 
     @Autowired
-    public FilmH2dbStorage(JdbcTemplate jdbcTemplate) {
+    public FilmH2dbStorage(JdbcTemplate jdbcTemplate, GenresStorage genresStorage) {
         this.jdbcTemplate = jdbcTemplate;
+        this.genresStorage = genresStorage;
     }
 
     @Override
@@ -97,20 +99,7 @@ public class FilmH2dbStorage implements FilmStorage {
         }
 
     }
-    public Set<Genre> getGenreOfFilm(Integer id){
-        String sql = "SELECT * from FILM_GENRES as F " +
-                "LEFT JOIN GENRES G2 on F.GENRE_ID = G2.GENRE_ID where FILM_ID = " + id + " order by G2.GENRE_ID";
 
-         List tmpGenres = jdbcTemplate.query(
-                sql,
-                (rs, rowNum) ->
-                        new Genre(
-                                rs.getInt("GENRE_ID"),
-                                rs.getString("NAME")
-                        )
-        );
-        return new HashSet<>(tmpGenres);
-    }
 
     public Film filmBuilder(ResultSet resultSet) throws SQLException {
         return Film.builder()
@@ -124,7 +113,7 @@ public class FilmH2dbStorage implements FilmStorage {
                         .id(resultSet.getInt("MPA_ID"))
                         .build()
                 )
-                .genres(getGenreOfFilm(resultSet.getInt("FILM_ID")))
+                .genres(genresStorage.getGenreOfFilm(resultSet.getInt("FILM_ID")))
                 .build();
     }
     private void deleteGenres(int id){
