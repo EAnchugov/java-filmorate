@@ -9,13 +9,10 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Genre;
-import ru.yandex.prakticum.filmorate.controllers.films.users.model.Mpa;
-import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.GenreService;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.Mapper;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -25,17 +22,16 @@ import java.util.Set;
 public class FilmH2dbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private final GenreService genreService;
+    private final Mapper mapper;
 
     @Autowired
-    public FilmH2dbStorage(JdbcTemplate jdbcTemplate, GenreService genreService) {
+    public FilmH2dbStorage(JdbcTemplate jdbcTemplate, Mapper mapper) {
         this.jdbcTemplate = jdbcTemplate;
-        this.genreService = genreService;
+        this.mapper = mapper;
     }
 
     @Override
     public Film addFilm(Film film) {
-
         String sqlMessage
                 = "insert into FILMS(name, description, release_date, duration, mpa_id)" +
                 "values ( ?, ?, ?, ?, ? )";
@@ -83,9 +79,9 @@ public class FilmH2dbStorage implements FilmStorage {
     }
 
     @Override
-    public List getAllFilm() {
+    public List<Film> getAllFilm() {
         return jdbcTemplate.query("select * from FILMS AS f LEFT JOIN MPA_RATING mr ON mr.MPA_ID = f.MPA_ID",
-                (resultSet, rowNum) -> filmBuilder(resultSet));
+                (resultSet, rowNum) -> mapper.filmBuilder(resultSet));
     }
 
     @Override
@@ -93,28 +89,12 @@ public class FilmH2dbStorage implements FilmStorage {
         try {
             return jdbcTemplate.queryForObject("Select * from FILMS AS f " +
                             "LEFT JOIN MPA_RATING mr ON mr.MPA_ID = f.MPA_ID where f.FILM_ID = " + id,
-                    (resultSet, rowNum) -> filmBuilder(resultSet));
+                    (resultSet, rowNum) -> mapper.filmBuilder(resultSet));
         } catch (RuntimeException e){
             throw new NotFoundException("Ошибка при получении фильма");
         }
-
     }
 
-    private Film filmBuilder(ResultSet resultSet) throws SQLException {
-        return Film.builder()
-                .id(resultSet.getInt("FILM_ID"))
-                .name(resultSet.getString("NAME"))
-                .description(resultSet.getString("DESCRIPTION"))
-                .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
-                .duration(resultSet.getInt("DURATION"))
-                .mpa(Mpa.builder()
-                        .name(resultSet.getString("MPA_NAME"))
-                        .id(resultSet.getInt("MPA_ID"))
-                        .build()
-                )
-                .genres(genreService.getGenreOfFilm(resultSet.getInt("FILM_ID")))
-                .build();
-    }
     private void deleteGenres(int id){
         jdbcTemplate.update("Delete from FILM_GENRES where FILM_ID =" + id);
     }

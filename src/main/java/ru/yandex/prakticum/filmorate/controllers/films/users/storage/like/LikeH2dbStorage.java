@@ -5,11 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
-import ru.yandex.prakticum.filmorate.controllers.films.users.model.Mpa;
-import ru.yandex.prakticum.filmorate.controllers.films.users.sevice.GenreService;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.Mapper;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 @Slf4j
@@ -17,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LikeH2dbStorage implements LikeStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final GenreService genreService;
+    private final Mapper mapper;
 
     @Override
     public void addLike(Integer filmId, Integer userId) {
@@ -39,21 +36,6 @@ public class LikeH2dbStorage implements LikeStorage {
                         "LEFT JOIN MPA_RATING mr ON mr.MPA_ID = f.MPA_ID " +
                         "GROUP BY f.FILM_ID ORDER BY like_count LIMIT " + count,
 
-        (resultSet, rowNum) -> filmBuilder(resultSet));
-    }
-    private Film filmBuilder(ResultSet resultSet) throws SQLException {
-        return Film.builder()
-                .id(resultSet.getInt("FILM_ID"))
-                .name(resultSet.getString("NAME"))
-                .description(resultSet.getString("DESCRIPTION"))
-                .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
-                .duration(resultSet.getInt("DURATION"))
-                .mpa(Mpa.builder()
-                        .name(resultSet.getString("MPA_NAME"))
-                        .id(resultSet.getInt("MPA_ID"))
-                        .build()
-                )
-                .genres(genreService.getGenreOfFilm(resultSet.getInt("FILM_ID")))
-                .build();
+        (resultSet, rowNum) -> mapper.filmBuilder(resultSet));
     }
 }
