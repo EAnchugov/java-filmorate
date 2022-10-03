@@ -1,7 +1,6 @@
 package ru.yandex.prakticum.filmorate.controllers.films.users.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
@@ -11,13 +10,11 @@ import javax.validation.constraints.Positive;
 import java.util.List;
 
 @RestController
-@Controller
+@Validated
+@RequiredArgsConstructor
 public class LikeController {
+
     private final LikeService likeService;
-    @Autowired
-    public LikeController(LikeService likeService) {
-            this.likeService = likeService;
-        }
 
     @PutMapping("/films/{id}/like/{userId}")
     public void addLike(
@@ -34,8 +31,6 @@ public class LikeController {
     }
 
     @GetMapping("/films/popular")
-    @ResponseBody
-    @Validated
     public List<Film> getFilmTop(
             @RequestParam (required = false, defaultValue = "10")
             @Positive(message = "should be positive number")Integer count) {

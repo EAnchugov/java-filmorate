@@ -6,33 +6,33 @@ import org.springframework.stereotype.Service;
 import ru.yandex.prakticum.filmorate.controllers.films.users.check.FilmCheck;
 import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
-import ru.yandex.prakticum.filmorate.controllers.films.users.storage.FilmStorage;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.film.FilmStorage;
 
 import java.util.List;
 @RequiredArgsConstructor
 @Service
 @Slf4j
 public class FilmService {
-    private final FilmStorage filmStorage;
+    private final FilmStorage filmH2dbStorage;
 
     public Film addFilm(Film film){
         FilmCheck.filmCheck(film);
-        return filmStorage.addFilm(film);
+        return filmH2dbStorage.addFilm(film);
     }
 
     public Film updateFilm(Film film){
         FilmCheck.filmCheck(film);
         getFilm(film.getId());//проверка
         log.trace("Добавлен фильм" + film);
-        return filmStorage.updateFilm(film);
+        return filmH2dbStorage.updateFilm(film);
     }
 
     public List<Film> getAllFilm(){
-        return filmStorage.getAllFilm();
+        return filmH2dbStorage.getAllFilm();
     }
 
     public Film getFilm(Integer id) {
-        Film film = filmStorage.getFilm(id);
+        Film film = filmH2dbStorage.getFilm(id);
         if (film == null){
             throw new NotFoundException("Film not found");
         }else {

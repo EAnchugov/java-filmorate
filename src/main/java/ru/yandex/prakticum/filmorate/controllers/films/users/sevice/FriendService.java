@@ -1,58 +1,31 @@
 package ru.yandex.prakticum.filmorate.controllers.films.users.sevice;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.friend.FriendStorage;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Service
+@RequiredArgsConstructor
 public class FriendService {
-    private final UserService userService;
-    @Autowired
-    public FriendService(UserService userService){
-        this.userService = userService;
-    }
+    private final FriendStorage friendH2dbStorage;
 
     public void addFriend(Integer userId,Integer friendId){
-            User user = userService.getUser(userId);
-            User friend = userService.getUser(friendId);
-            user.setFriend(friendId);
-            friend.setFriend(userId);
+        friendH2dbStorage.addFriend(userId,friendId);
     }
 
     public void deleteFriend(Integer userId,Integer friendId){
-        User user = userService.getUser(userId);
-        User friend = userService.getUser(friendId);
-        try {
-            if (user == null || friend == null){
-                throw new NotFoundException("User not found");
-            }
-            user.removeFriend(friendId);
-            friend.removeFriend(userId);
-        } catch (RuntimeException e){
-            throw new RuntimeException("Error in delete");
-        }
+        friendH2dbStorage.deleteFriend(userId,friendId);
     }
 
     public List<User> getUserFriends(Integer id){
-        return userService.getUser(id)
-                .getFriendsStorage()
-                .stream()
-                .map(userService::getUser)
-                .collect(Collectors.toList());
+        return friendH2dbStorage.getUserFriends(id);
     }
 
     public List<User> getCommonFriends(Integer userId, Integer friendId){
-        User user  = userService.getUser(userId);
-        User friend = userService.getUser(friendId);
-        return user.getFriendsStorage()
-                .stream()
-                .filter(friend.getFriendsStorage()::contains)
-                .map(userService::getUser)
-                .collect(Collectors.toList());
+        return friendH2dbStorage.getCommonFriends(userId,friendId);
     }
 }

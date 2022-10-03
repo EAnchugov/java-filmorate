@@ -1,4 +1,4 @@
-package ru.yandex.prakticum.filmorate.controllers.films.users.storage;
+package ru.yandex.prakticum.filmorate.controllers.films.users.storage.user;
 
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
 
@@ -7,6 +7,6 @@ public interface UserStorage {
     User createUser(User user);
     User  updateUser( User user);
     List<User> getAllUser();
-    User getUser(Integer id);
+    User getUser(int id);
 
 }

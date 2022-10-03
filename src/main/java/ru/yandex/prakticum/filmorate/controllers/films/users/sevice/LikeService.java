@@ -1,43 +1,33 @@
 package ru.yandex.prakticum.filmorate.controllers.films.users.sevice;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.prakticum.filmorate.controllers.films.users.exceptions.NotFoundException;
 import ru.yandex.prakticum.filmorate.controllers.films.users.model.Film;
-import ru.yandex.prakticum.filmorate.controllers.films.users.model.User;
-import ru.yandex.prakticum.filmorate.controllers.films.users.storage.UserStorage;
-import ru.yandex.prakticum.filmorate.controllers.films.users.storage.FilmStorage;
+import ru.yandex.prakticum.filmorate.controllers.films.users.storage.like.LikeStorage;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class LikeService {
-    private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
+    private final LikeStorage likeH2dbStorage;
+    private final UserService userService;
+    private final FilmService filmService;
 
-    public void addLike(Integer filmId, Integer userId) {
-        filmStorage.getFilm(filmId).addLike(userId);
+    public void addLike(Integer filmId, Integer userId){
+        likeH2dbStorage.addLike(filmId,userId);
     }
 
     public void removeLike(Integer filmId, Integer userId) {
-        Film film = filmStorage.getFilm(filmId);
-        User user = userStorage.getUser(userId);
-        if (filmId == null || userId == null||
-                film == null||  user == null){
-                throw new NotFoundException("Film or User not found in removeLikes");
+        if (filmService.getFilm(filmId).getGenres().isEmpty()  | userService.getUser(userId).getEmail().isEmpty()){
+            throw new NotFoundException("Не найден фильм или пользователь");
         }
-        else {
-            filmStorage.getFilm(filmId).removeLike(userId);
-            }
+        likeH2dbStorage.removeLike(filmId,userId);
     }
 
     public List<Film> getFilmTop(Integer count) {
-        return filmStorage.getAllFilm().stream()
-                .sorted(Comparator.comparingInt(Film::getNumberOfLikes).reversed())
-                .limit(count)
-                .collect(Collectors.toList());
-        }
+        return likeH2dbStorage.getFilmTop(count);
     }
+}
